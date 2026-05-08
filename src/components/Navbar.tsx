@@ -31,7 +31,7 @@ export function Navbar() {
           href="#confirmar"
           className="hidden text-[10px] tracking-wide-luxe text-muted-foreground transition-colors hover:text-gold md:block"
         >
-          CONFIRMAR PRESENÇA
+          {cta}
         </a>
       </div>
     </nav>
