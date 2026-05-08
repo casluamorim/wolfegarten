@@ -17,7 +17,7 @@ export function Experience() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-background py-32 md:py-48">
+    <section className="relative overflow-hidden bg-background py-20 md:py-32">
       <div
         className="absolute inset-0 opacity-20"
         style={{

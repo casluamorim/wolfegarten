@@ -6,7 +6,7 @@ export function Vagas() {
   const title = useText("vagas.title", "Evento exclusivo para\nconvidados selecionados.");
   const sub = useText("vagas.sub", "Sua presença é um privilégio.");
   return (
-    <section className="bg-background py-28 md:py-40">
+    <section className="bg-background py-16 md:py-28">
       <div className="mx-auto max-w-2xl px-6 text-center">
         <Reveal>
           <div className="inline-block border border-gold/40 px-8 py-3 text-[10px] tracking-luxe text-gold">

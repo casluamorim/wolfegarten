@@ -18,7 +18,7 @@ export function Info() {
   ];
 
   return (
-    <section className="relative overflow-hidden py-32 md:py-44">
+    <section className="relative overflow-hidden py-20 md:py-32">
       <div
         className="absolute inset-0 scale-110"
         style={{

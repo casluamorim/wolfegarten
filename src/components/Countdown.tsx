@@ -38,7 +38,7 @@ export function Countdown() {
   ];
 
   return (
-    <section className="relative bg-forest-deep py-28 md:py-40">
+    <section className="relative bg-forest-deep py-16 md:py-28">
       <div className="mx-auto max-w-4xl px-6 text-center">
         <Reveal>
           <div className="text-[10px] tracking-luxe text-gold">{eyebrow}</div>

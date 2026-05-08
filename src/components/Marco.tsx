@@ -9,7 +9,7 @@ export function Marco() {
   const quote = useText("marco.quote", "");
 
   return (
-    <section className="relative bg-background py-32 md:py-48">
+    <section className="relative bg-background py-20 md:py-32">
       <div className="mx-auto max-w-3xl px-6 text-center">
         <Reveal>
           <div className="text-[10px] tracking-luxe text-gold">{eyebrow}</div>
