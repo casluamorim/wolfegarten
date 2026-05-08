@@ -2,30 +2,18 @@ import { Reveal } from "./Reveal";
 import { MapPin, Calendar, Clock } from "lucide-react";
 import infoFallback from "@/assets/info-bg.jpg";
 import { useSiteAsset } from "@/hooks/use-site-asset";
-
-const blocks = [
-  {
-    Icon: MapPin,
-    label: "LOCAL",
-    title: "Indaial",
-    sub: "Rua Lauro Muller, 159\nCafé Coworking — Indaial, SC",
-  },
-  {
-    Icon: Calendar,
-    label: "DATA",
-    title: "16 de Maio",
-    sub: "Sábado",
-  },
-  {
-    Icon: Clock,
-    label: "HORÁRIO",
-    title: "10h — 16h",
-    sub: "Recepção às 10h",
-  },
-];
+import { useText } from "@/hooks/use-site-content";
 
 export function Info() {
   const infoImg = useSiteAsset("info", infoFallback);
+  const eyebrow = useText("info.eyebrow", "INFORMAÇÕES");
+
+  const blocks = [
+    { Icon: MapPin, label: "LOCAL", title: useText("info.local_title", "Indaial"), sub: useText("info.local_sub", "") },
+    { Icon: Calendar, label: "DATA", title: useText("info.date_title", "16 de Maio"), sub: useText("info.date_sub", "Sábado") },
+    { Icon: Clock, label: "HORÁRIO", title: useText("info.time_title", "10h — 16h"), sub: useText("info.time_sub", "Recepção às 10h") },
+  ];
+
   return (
     <section className="relative overflow-hidden py-32 md:py-44">
       <div
@@ -43,7 +31,7 @@ export function Info() {
       <div className="relative mx-auto max-w-6xl px-6">
         <div className="text-center">
           <Reveal>
-            <div className="text-[10px] tracking-luxe text-gold">INFORMAÇÕES</div>
+            <div className="text-[10px] tracking-luxe text-gold">{eyebrow}</div>
             <div className="mx-auto my-6 gold-divider" />
           </Reveal>
         </div>

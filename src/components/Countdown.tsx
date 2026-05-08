@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { Reveal } from "./Reveal";
+import { useText } from "@/hooks/use-site-content";
 
-const TARGET = new Date("2026-05-16T10:00:00-03:00").getTime();
-
-function diff() {
-  const d = TARGET - Date.now();
+function diff(target: number) {
+  const d = target - Date.now();
   if (d <= 0) return { d: 0, h: 0, m: 0, s: 0 };
   return {
     d: Math.floor(d / 86400000),
@@ -15,11 +14,16 @@ function diff() {
 }
 
 export function Countdown() {
-  const [t, setT] = useState(diff());
+  const eyebrow = useText("countdown.eyebrow", "CONTAGEM REGRESSIVA");
+  const title = useText("countdown.title", "Para o lançamento oficial");
+  const targetStr = useText("countdown.target_date", "2026-05-16T10:00:00-03:00");
+  const target = new Date(targetStr).getTime();
+
+  const [t, setT] = useState(diff(target));
   useEffect(() => {
-    const i = setInterval(() => setT(diff()), 1000);
+    const i = setInterval(() => setT(diff(target)), 1000);
     return () => clearInterval(i);
-  }, []);
+  }, [target]);
 
   const items = [
     { v: t.d, l: "DIAS" },
@@ -32,11 +36,9 @@ export function Countdown() {
     <section className="relative bg-forest-deep py-28 md:py-40">
       <div className="mx-auto max-w-4xl px-6 text-center">
         <Reveal>
-          <div className="text-[10px] tracking-luxe text-gold">CONTAGEM REGRESSIVA</div>
+          <div className="text-[10px] tracking-luxe text-gold">{eyebrow}</div>
           <div className="mx-auto my-6 gold-divider" />
-          <h2 className="font-serif text-3xl font-light text-offwhite md:text-5xl">
-            Para o lançamento oficial
-          </h2>
+          <h2 className="font-serif text-3xl font-light text-offwhite md:text-5xl">{title}</h2>
         </Reveal>
 
         <Reveal delay={300}>
