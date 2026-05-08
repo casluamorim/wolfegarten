@@ -72,14 +72,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "WÖLFEGARTEN" },
+      { name: "description", content: "Wolfegarten é um loteamento fechado de altíssimo padrão em Indaial/SC, criado para quem busca exclusividade, sofisticação, natureza e um novo conceito de viver" },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "WÖLFEGARTEN" },
+      { property: "og:description", content: "Wolfegarten é um loteamento fechado de altíssimo padrão em Indaial/SC, criado para quem busca exclusividade, sofisticação, natureza e um novo conceito de viver" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "WÖLFEGARTEN" },
+      { name: "twitter:description", content: "Wolfegarten é um loteamento fechado de altíssimo padrão em Indaial/SC, criado para quem busca exclusividade, sofisticação, natureza e um novo conceito de viver" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5a7c0772-cf84-4693-9189-6bf08fd07732/id-preview-bbfd97f9--66158f66-615e-433f-84ec-8ecd648e0a65.lovable.app-1778277960241.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/5a7c0772-cf84-4693-9189-6bf08fd07732/id-preview-bbfd97f9--66158f66-615e-433f-84ec-8ecd648e0a65.lovable.app-1778277960241.png" },
     ],
     links: [
       {
