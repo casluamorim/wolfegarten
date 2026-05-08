@@ -4,16 +4,32 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { ALL_ASSET_KEYS, ASSET_LABELS, type AssetKey } from "@/hooks/use-site-asset";
+import { ContentEditor } from "@/components/admin/ContentEditor";
+import { LivePreview } from "@/components/admin/LivePreview";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminPage,
-  head: () => ({ meta: [{ title: "Admin · Wölfegarten" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [{ title: "Admin · Wölfegarten" }, { name: "robots", content: "noindex" }],
+  }),
 });
+
+type Tab = "editar" | "imagens" | "logos" | "leads";
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: "editar", label: "EDITAR SITE" },
+  { id: "imagens", label: "IMAGENS" },
+  { id: "logos", label: "LOGOS" },
+  { id: "leads", label: "LEADS" },
+];
+
+const IMAGE_KEYS: AssetKey[] = ALL_ASSET_KEYS.filter((k) => !k.startsWith("logo-"));
+const LOGO_KEYS: AssetKey[] = ALL_ASSET_KEYS.filter((k) => k.startsWith("logo-"));
 
 function AdminPage() {
   const { session, loading } = useAuth();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"leads" | "imagens">("leads");
+  const [tab, setTab] = useState<Tab>("editar");
 
   useEffect(() => {
     if (!loading && !session) navigate({ to: "/admin/login" });
@@ -35,7 +51,6 @@ function AdminPage() {
   });
 
   if (loading || !session) return null;
-
   if (isAdmin.isLoading)
     return <div className="p-10 text-center text-sm text-muted-foreground">Carregando...</div>;
 
@@ -43,20 +58,18 @@ function AdminPage() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-6 px-6 text-center">
         <h1 className="font-serif text-2xl text-offwhite">Acesso restrito</h1>
-        <p className="text-sm text-muted-foreground">
-          Sua conta não tem permissão de administrador.
-        </p>
-        <button onClick={() => supabase.auth.signOut()} className="btn-ghost-luxe">
-          Sair
-        </button>
+        <p className="text-sm text-muted-foreground">Sua conta não tem permissão de administrador.</p>
+        <button onClick={() => supabase.auth.signOut()} className="btn-ghost-luxe">Sair</button>
       </div>
     );
   }
 
+  const showPreview = tab === "editar" || tab === "imagens" || tab === "logos";
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+        <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-6">
           <Link to="/" className="text-[11px] tracking-luxe text-offwhite">
             WÖLFEGARTEN · ADMIN
           </Link>
@@ -70,23 +83,31 @@ function AdminPage() {
             </button>
           </div>
         </div>
-        <nav className="mx-auto flex max-w-6xl gap-8 px-6">
-          {(["leads", "imagens"] as const).map((t) => (
+        <nav className="mx-auto flex max-w-[1600px] gap-8 px-6">
+          {TABS.map((t) => (
             <button
-              key={t}
-              onClick={() => setTab(t)}
+              key={t.id}
+              onClick={() => setTab(t.id)}
               className={`pb-4 text-[10px] tracking-luxe transition-colors ${
-                tab === t ? "border-b border-gold text-gold" : "text-muted-foreground"
+                tab === t.id ? "border-b border-gold text-gold" : "text-muted-foreground"
               }`}
             >
-              {t.toUpperCase()}
+              {t.label}
             </button>
           ))}
         </nav>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-12">
-        {tab === "leads" ? <LeadsPanel /> : <ImagesPanel />}
+      <main className="mx-auto max-w-[1600px] px-6 py-8">
+        <div className={showPreview ? "grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" : ""}>
+          <div>
+            {tab === "editar" && <ContentEditor />}
+            {tab === "imagens" && <AssetsPanel keys={IMAGE_KEYS} title="Imagens" />}
+            {tab === "logos" && <AssetsPanel keys={LOGO_KEYS} title="Logos" />}
+            {tab === "leads" && <LeadsPanel />}
+          </div>
+          {showPreview && <LivePreview />}
+        </div>
       </main>
     </div>
   );
@@ -145,27 +166,21 @@ function LeadsPanel() {
           <h2 className="font-serif text-3xl text-offwhite">Leads</h2>
           <p className="mt-1 text-xs text-muted-foreground">{data?.length ?? 0} confirmações</p>
         </div>
-        <button onClick={exportCsv} className="btn-ghost-luxe">
-          Exportar CSV
-        </button>
+        <button onClick={exportCsv} className="btn-ghost-luxe">Exportar CSV</button>
       </div>
       <div className="overflow-x-auto rounded border border-border">
         <table className="w-full text-sm">
           <thead className="bg-card text-[10px] tracking-luxe text-muted-foreground">
             <tr>
               {["DATA", "NOME", "TELEFONE", "E-MAIL", "CIDADE", "ORIGEM", ""].map((h) => (
-                <th key={h} className="px-4 py-3 text-left font-normal">
-                  {h}
-                </th>
+                <th key={h} className="px-4 py-3 text-left font-normal">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {data?.map((l) => (
               <tr key={l.id} className="border-t border-border text-offwhite/80">
-                <td className="px-4 py-3 text-xs">
-                  {new Date(l.created_at).toLocaleString("pt-BR")}
-                </td>
+                <td className="px-4 py-3 text-xs">{new Date(l.created_at).toLocaleString("pt-BR")}</td>
                 <td className="px-4 py-3">{l.nome}</td>
                 <td className="px-4 py-3">
                   <a
@@ -204,15 +219,15 @@ function LeadsPanel() {
   );
 }
 
-function ImagesPanel() {
+function AssetsPanel({ keys, title }: { keys: AssetKey[]; title: string }) {
   return (
     <div>
-      <h2 className="font-serif text-3xl text-offwhite">Imagens & Logos</h2>
+      <h2 className="font-serif text-3xl text-offwhite">{title}</h2>
       <p className="mt-1 text-xs text-muted-foreground">
-        Faça upload em JPG ou PNG. As alterações aparecem no site automaticamente.
+        Arraste e solte ou clique para enviar. Atualização imediata no site.
       </p>
-      <div className="mt-10 grid gap-6 md:grid-cols-2">
-        {ALL_ASSET_KEYS.map((k) => (
+      <div className="mt-8 grid gap-5 md:grid-cols-2">
+        {keys.map((k) => (
           <AssetCard key={k} assetKey={k} />
         ))}
       </div>
@@ -224,6 +239,7 @@ function AssetCard({ assetKey }: { assetKey: AssetKey }) {
   const qc = useQueryClient();
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [drag, setDrag] = useState(false);
 
   const current = useQuery({
     queryKey: ["asset", assetKey],
@@ -266,24 +282,24 @@ function AssetCard({ assetKey }: { assetKey: AssetKey }) {
   const isLogo = assetKey.startsWith("logo-");
 
   return (
-    <div className="glass-card p-6">
+    <div className="glass-card p-5">
       <div className="text-[10px] tracking-luxe text-gold">{ASSET_LABELS[assetKey]}</div>
-      <div
-        className={`mt-4 flex items-center justify-center overflow-hidden rounded border border-border bg-background ${
-          isLogo ? "h-28" : "h-40"
-        }`}
+      <label
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDrag(true);
+        }}
+        onDragLeave={() => setDrag(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDrag(false);
+          const f = e.dataTransfer.files?.[0];
+          if (f) onUpload(f);
+        }}
+        className={`mt-4 flex cursor-pointer items-center justify-center overflow-hidden rounded border-2 border-dashed bg-background transition-colors ${
+          drag ? "border-gold bg-gold/5" : "border-border hover:border-gold/50"
+        } ${isLogo ? "h-28" : "h-40"}`}
       >
-        {current.data ? (
-          <img
-            src={current.data}
-            alt={ASSET_LABELS[assetKey]}
-            className={isLogo ? "max-h-20 object-contain" : "h-full w-full object-cover"}
-          />
-        ) : (
-          <span className="text-[10px] tracking-luxe text-muted-foreground">SEM IMAGEM</span>
-        )}
-      </div>
-      <label className="mt-4 block">
         <input
           type="file"
           accept={isLogo ? "image/png,image/svg+xml,image/webp" : "image/jpeg,image/png,image/webp"}
@@ -291,9 +307,17 @@ function AssetCard({ assetKey }: { assetKey: AssetKey }) {
           disabled={busy}
           onChange={(e) => e.target.files?.[0] && onUpload(e.target.files[0])}
         />
-        <span className="btn-ghost-luxe block w-full cursor-pointer text-center">
-          {busy ? "Enviando..." : "Trocar imagem"}
-        </span>
+        {current.data ? (
+          <img
+            src={current.data}
+            alt={ASSET_LABELS[assetKey]}
+            className={isLogo ? "max-h-20 object-contain" : "h-full w-full object-cover"}
+          />
+        ) : (
+          <span className="text-[10px] tracking-luxe text-muted-foreground">
+            {busy ? "ENVIANDO..." : "ARRASTE OU CLIQUE"}
+          </span>
+        )}
       </label>
       {err && <p className="mt-2 text-xs text-destructive">{err}</p>}
     </div>

@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useSiteAssets, ASSET_LABELS, type AssetKey } from "@/hooks/use-site-asset";
+import { useText } from "@/hooks/use-site-content";
 
 const LOGOS: { key: AssetKey; fallback: string }[] = [
   { key: "logo-zah", fallback: "ZAH" },
@@ -9,13 +10,16 @@ const LOGOS: { key: AssetKey; fallback: string }[] = [
 
 export function Footer() {
   const { data: assets } = useSiteAssets();
+  const realizacaoLabel = useText("footer.realizacao_label", "REALIZAÇÃO");
+  const city = useText("footer.city", "INDAIAL — SANTA CATARINA");
+  const phone = useText("footer.phone", "(47) 98817-8508");
   return (
     <footer className="border-t border-border bg-background py-16">
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex flex-col items-center gap-10 text-center">
           <div className="text-[11px] tracking-luxe text-offwhite">WÖLFEGARTEN</div>
           <div className="gold-divider" />
-          <div className="text-[9px] tracking-luxe text-muted-foreground">REALIZAÇÃO</div>
+          <div className="text-[9px] tracking-luxe text-muted-foreground">{realizacaoLabel}</div>
           <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
             {LOGOS.map(({ key, fallback }) => {
               const url = assets?.[key];
@@ -37,8 +41,8 @@ export function Footer() {
             })}
           </div>
           <div className="mt-6 flex flex-col items-center gap-2 text-[10px] tracking-wide-luxe text-muted-foreground">
-            <div>INDAIAL — SANTA CATARINA</div>
-            <div>(47) 98817-8508</div>
+            <div>{city}</div>
+            <div>{phone}</div>
           </div>
           <div className="mt-6 flex items-center gap-6 text-[9px] tracking-wide-luxe text-muted-foreground/60">
             <span>© {new Date().getFullYear()} WÖLFEGARTEN — TODOS OS DIREITOS RESERVADOS</span>
