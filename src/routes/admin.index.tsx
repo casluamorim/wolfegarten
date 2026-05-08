@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { ALL_ASSET_KEYS, ASSET_LABELS, type AssetKey } from "@/hooks/use-site-asset";
 import { ContentEditor } from "@/components/admin/ContentEditor";
 import { LivePreview } from "@/components/admin/LivePreview";
-import { GalleriesPanel } from "@/components/admin/GalleriesPanel";
 import { PhasePanel } from "@/components/admin/PhasePanel";
+import { MediaPanel } from "@/components/admin/MediaPanel";
+import { SettingsPanel } from "@/components/admin/SettingsPanel";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminPage,
@@ -16,19 +16,15 @@ export const Route = createFileRoute("/admin/")({
   }),
 });
 
-type Tab = "editar" | "fase" | "imagens" | "galerias" | "logos" | "leads";
+type Tab = "editar" | "midia" | "config" | "fase" | "leads";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "editar", label: "EDITAR SITE" },
-  { id: "fase", label: "FASE & SEÇÕES" },
-  { id: "imagens", label: "IMAGENS" },
-  { id: "galerias", label: "GALERIAS" },
-  { id: "logos", label: "LOGOS" },
+  { id: "midia", label: "MÍDIA" },
+  { id: "config", label: "CONFIGURAÇÕES" },
+  { id: "fase", label: "FASE & SIMULADOR" },
   { id: "leads", label: "LEADS" },
 ];
-
-const IMAGE_KEYS: AssetKey[] = ALL_ASSET_KEYS.filter((k) => !k.startsWith("logo-"));
-const LOGO_KEYS: AssetKey[] = ALL_ASSET_KEYS.filter((k) => k.startsWith("logo-"));
 
 function AdminPage() {
   const { session, loading } = useAuth();
@@ -73,12 +69,14 @@ function AdminPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">
-        <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-6">
+        <div className="mx-auto flex max-w-[1600px] items-center justify-between px-4 py-4 md:px-6 md:py-6">
           <Link to="/" className="text-[11px] tracking-luxe text-offwhite">
             WÖLFEGARTEN · ADMIN
           </Link>
-          <div className="flex items-center gap-4">
-            <span className="text-[10px] text-muted-foreground">{session.user.email}</span>
+          <div className="flex items-center gap-3 md:gap-4">
+            <span className="hidden text-[10px] text-muted-foreground sm:inline">
+              {session.user.email}
+            </span>
             <button
               onClick={() => supabase.auth.signOut().then(() => navigate({ to: "/admin/login" }))}
               className="text-[10px] tracking-luxe text-muted-foreground hover:text-gold"
@@ -87,12 +85,12 @@ function AdminPage() {
             </button>
           </div>
         </div>
-        <nav className="mx-auto flex max-w-[1600px] gap-8 px-6">
+        <nav className="mx-auto flex max-w-[1600px] gap-4 overflow-x-auto px-4 md:gap-8 md:px-6">
           {TABS.map((t) => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`pb-4 text-[10px] tracking-luxe transition-colors ${
+              className={`whitespace-nowrap pb-4 text-[10px] tracking-luxe transition-colors ${
                 tab === t.id ? "border-b border-gold text-gold" : "text-muted-foreground"
               }`}
             >
@@ -102,17 +100,20 @@ function AdminPage() {
         </nav>
       </header>
 
-      <main className="mx-auto max-w-[1600px] px-6 py-8">
+      <main className="mx-auto max-w-[1600px] px-4 py-6 md:px-6 md:py-8">
         <div className={showPreview ? "grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" : ""}>
           <div>
             {tab === "editar" && <ContentEditor />}
             {tab === "fase" && <PhasePanel />}
-            {tab === "imagens" && <AssetsPanel keys={IMAGE_KEYS} title="Imagens" />}
-            {tab === "galerias" && <GalleriesPanel />}
-            {tab === "logos" && <AssetsPanel keys={LOGO_KEYS} title="Logos" />}
+            {tab === "midia" && <MediaPanel />}
+            {tab === "config" && <SettingsPanel />}
             {tab === "leads" && <LeadsPanel />}
           </div>
-          {showPreview && <LivePreview />}
+          {showPreview && (
+            <div className="hidden lg:block">
+              <LivePreview />
+            </div>
+          )}
         </div>
       </main>
     </div>
@@ -221,111 +222,6 @@ function LeadsPanel() {
           </tbody>
         </table>
       </div>
-    </div>
-  );
-}
-
-function AssetsPanel({ keys, title }: { keys: AssetKey[]; title: string }) {
-  return (
-    <div>
-      <h2 className="font-serif text-3xl text-offwhite">{title}</h2>
-      <p className="mt-1 text-xs text-muted-foreground">
-        Arraste e solte ou clique para enviar. Atualização imediata no site.
-      </p>
-      <div className="mt-8 grid gap-5 md:grid-cols-2">
-        {keys.map((k) => (
-          <AssetCard key={k} assetKey={k} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function AssetCard({ assetKey }: { assetKey: AssetKey }) {
-  const qc = useQueryClient();
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-  const [drag, setDrag] = useState(false);
-
-  const current = useQuery({
-    queryKey: ["asset", assetKey],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("site_assets")
-        .select("storage_path")
-        .eq("asset_key", assetKey)
-        .maybeSingle();
-      if (!data) return null;
-      return supabase.storage.from("site-assets").getPublicUrl(data.storage_path).data.publicUrl;
-    },
-  });
-
-  const onUpload = async (file: File) => {
-    setBusy(true);
-    setErr(null);
-    try {
-      if (file.size > 8 * 1024 * 1024) throw new Error("Máx 8MB");
-      const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-      const path = `${assetKey}-${Date.now()}.${ext}`;
-      const up = await supabase.storage.from("site-assets").upload(path, file, {
-        cacheControl: "3600",
-        upsert: false,
-      });
-      if (up.error) throw up.error;
-      const { error } = await supabase
-        .from("site_assets")
-        .upsert({ asset_key: assetKey, storage_path: path }, { onConflict: "asset_key" });
-      if (error) throw error;
-      await qc.invalidateQueries({ queryKey: ["asset", assetKey] });
-      await qc.invalidateQueries({ queryKey: ["site-assets"] });
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Erro no upload");
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const isLogo = assetKey.startsWith("logo-");
-
-  return (
-    <div className="glass-card p-5">
-      <div className="text-[10px] tracking-luxe text-gold">{ASSET_LABELS[assetKey]}</div>
-      <label
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDrag(true);
-        }}
-        onDragLeave={() => setDrag(false)}
-        onDrop={(e) => {
-          e.preventDefault();
-          setDrag(false);
-          const f = e.dataTransfer.files?.[0];
-          if (f) onUpload(f);
-        }}
-        className={`mt-4 flex cursor-pointer items-center justify-center overflow-hidden rounded border-2 border-dashed bg-background transition-colors ${
-          drag ? "border-gold bg-gold/5" : "border-border hover:border-gold/50"
-        } ${isLogo ? "h-28" : "h-40"}`}
-      >
-        <input
-          type="file"
-          accept={isLogo ? "image/png,image/svg+xml,image/webp" : "image/jpeg,image/png,image/webp"}
-          className="hidden"
-          disabled={busy}
-          onChange={(e) => e.target.files?.[0] && onUpload(e.target.files[0])}
-        />
-        {current.data ? (
-          <img
-            src={current.data}
-            alt={ASSET_LABELS[assetKey]}
-            className={isLogo ? "max-h-20 object-contain" : "h-full w-full object-cover"}
-          />
-        ) : (
-          <span className="text-[10px] tracking-luxe text-muted-foreground">
-            {busy ? "ENVIANDO..." : "ARRASTE OU CLIQUE"}
-          </span>
-        )}
-      </label>
-      {err && <p className="mt-2 text-xs text-destructive">{err}</p>}
     </div>
   );
 }
