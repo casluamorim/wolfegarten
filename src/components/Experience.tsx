@@ -1,6 +1,7 @@
 import { Reveal } from "./Reveal";
 import { ChefHat, Wine, Car, Gem } from "lucide-react";
-import expImg from "@/assets/experience.jpg";
+import expFallback from "@/assets/experience.jpg";
+import { useSiteAsset } from "@/hooks/use-site-asset";
 
 const items = [
   { Icon: ChefHat, title: "Gastronomia", text: "Experiência assinada por chef renomado." },
@@ -10,6 +11,7 @@ const items = [
 ];
 
 export function Experience() {
+  const expImg = useSiteAsset("experience", expFallback);
   return (
     <section className="relative overflow-hidden bg-background py-32 md:py-48">
       <div
