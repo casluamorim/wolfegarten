@@ -2,12 +2,9 @@ import { useEffect, useState } from "react";
 import heroFallback from "@/assets/hero-wolfegarten.jpg";
 import { useSiteAsset } from "@/hooks/use-site-asset";
 import { useText } from "@/hooks/use-site-content";
-import { useActiveGalleryImage } from "@/hooks/use-launch";
 
 export function Hero() {
-  const galleryImg = useActiveGalleryImage("hero");
-  const fallbackImg = useSiteAsset("hero", heroFallback);
-  const heroImg = galleryImg ?? fallbackImg;
+  const heroImg = useSiteAsset("hero", heroFallback);
   const eyebrow = useText("hero.eyebrow", "CONVITE EXCLUSIVO");
   const kicker = useText("hero.kicker", "O ALTO PADRÃO CHEGOU A INDAIAL");
   const t1 = useText("hero.title_line1", "Experiência");

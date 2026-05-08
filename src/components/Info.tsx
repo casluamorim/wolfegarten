@@ -3,12 +3,9 @@ import { MapPin, Calendar, Clock } from "lucide-react";
 import infoFallback from "@/assets/info-bg.jpg";
 import { useSiteAsset } from "@/hooks/use-site-asset";
 import { useText } from "@/hooks/use-site-content";
-import { useActiveGalleryImage } from "@/hooks/use-launch";
 
 export function Info() {
-  const galleryImg = useActiveGalleryImage("info");
-  const fallbackImg = useSiteAsset("info", infoFallback);
-  const infoImg = galleryImg ?? fallbackImg;
+  const infoImg = useSiteAsset("info", infoFallback);
   const eyebrow = useText("info.eyebrow", "INFORMAÇÕES");
 
   const blocks = [
