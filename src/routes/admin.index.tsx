@@ -68,7 +68,7 @@ function AdminPage() {
     );
   }
 
-  const showPreview = tab === "editar" || tab === "imagens" || tab === "logos";
+  const showPreview = tab !== "leads";
 
   return (
     <div className="min-h-screen bg-background">
@@ -106,7 +106,9 @@ function AdminPage() {
         <div className={showPreview ? "grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" : ""}>
           <div>
             {tab === "editar" && <ContentEditor />}
+            {tab === "fase" && <PhasePanel />}
             {tab === "imagens" && <AssetsPanel keys={IMAGE_KEYS} title="Imagens" />}
+            {tab === "galerias" && <GalleriesPanel />}
             {tab === "logos" && <AssetsPanel keys={LOGO_KEYS} title="Logos" />}
             {tab === "leads" && <LeadsPanel />}
           </div>
