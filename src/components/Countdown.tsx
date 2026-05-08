@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Reveal } from "./Reveal";
 import { useText } from "@/hooks/use-site-content";
+import { now as simNow, onSimChange } from "@/lib/simulation";
 
 function diff(target: number) {
-  const d = target - Date.now();
+  const d = target - simNow();
   if (d <= 0) return { d: 0, h: 0, m: 0, s: 0 };
   return {
     d: Math.floor(d / 86400000),
