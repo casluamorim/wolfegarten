@@ -66,7 +66,7 @@ export function PhasePanel() {
   );
 }
 
-function saveContent(key: string, value: unknown) {
+function saveContent(key: string, value: string | number | boolean | null) {
   return supabase
     .from("site_content")
     .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: "key" });
