@@ -67,7 +67,7 @@ export function Confirm() {
   ];
 
   return (
-    <section id="confirmar" className="bg-forest-deep py-20 md:py-32">
+    <section id="confirmar" className="bg-forest-deep py-32 md:py-44">
       <div className="mx-auto max-w-xl px-6 text-center">
         <Reveal>
           <div className="text-[10px] tracking-luxe text-gold">{eyebrow}</div>

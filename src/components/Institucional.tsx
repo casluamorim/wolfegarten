@@ -6,7 +6,7 @@ export function Institucional() {
   const title = useText("institucional.title", "Wölfegarten");
   const text = useText("institucional.text", "");
   return (
-    <section className="bg-background py-20 md:py-32">
+    <section className="bg-background py-32 md:py-44">
       <div className="mx-auto max-w-3xl px-6 text-center">
         <Reveal>
           <div className="text-[10px] tracking-luxe text-gold">{eyebrow}</div>

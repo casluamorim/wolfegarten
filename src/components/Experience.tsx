@@ -17,7 +17,7 @@ export function Experience() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-background py-20 md:py-32">
+    <section className="relative overflow-hidden bg-background py-32 md:py-48">
       <div
         className="absolute inset-0 opacity-20"
         style={{
@@ -40,7 +40,7 @@ export function Experience() {
           </Reveal>
         </div>
 
-        <div className="mt-12 md:mt-20 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-20 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {items.map((it, i) => (
             <Reveal key={i} delay={i * 150}>
               <div className="glass-card group h-full p-8 text-center">

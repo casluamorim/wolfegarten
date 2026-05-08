@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteContent } from "@/hooks/use-site-content";
 import { useLaunchPhase } from "@/hooks/use-launch";
-import { SimulationPanel } from "./SimulationPanel";
 
 const SECTIONS: { id: string; label: string; phaseNote?: string }[] = [
   { id: "countdown", label: "Contagem regressiva", phaseNote: "Visível somente na Fase 1" },
@@ -50,10 +49,6 @@ export function PhasePanel() {
             value={typeof data?.["launch.mode"] === "string" ? (data["launch.mode"] as string) : "auto"}
           />
         </div>
-      </div>
-
-      <div className="mt-8">
-        <SimulationPanel />
       </div>
 
       <div className="mt-8 rounded border border-border bg-card/40 p-5">
