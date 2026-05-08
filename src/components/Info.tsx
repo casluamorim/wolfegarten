@@ -39,7 +39,7 @@ export function Info() {
           </Reveal>
         </div>
 
-        <div className="mt-16 grid grid-cols-1 gap-12 md:grid-cols-3">
+        <div className="mt-10 md:mt-16 grid grid-cols-1 gap-12 md:grid-cols-3">
           {blocks.map((b, i) => (
             <Reveal key={b.label} delay={i * 200}>
               <div className="text-center">

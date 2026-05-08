@@ -23,7 +23,7 @@ export function Marco() {
         </Reveal>
 
         <Reveal delay={400}>
-          <div className="mt-12 space-y-6 text-base font-light leading-relaxed text-offwhite/70 md:text-lg">
+          <div className="mt-8 md:mt-12 space-y-6 text-base font-light leading-relaxed text-offwhite/70 md:text-lg">
             <p>{p1}</p>
             <p>{p2}</p>
             <p className="font-serif text-xl italic text-gold/90 md:text-2xl whitespace-pre-line">

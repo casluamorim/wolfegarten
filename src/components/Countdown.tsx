@@ -47,7 +47,7 @@ export function Countdown() {
         </Reveal>
 
         <Reveal delay={300}>
-          <div className="mt-16 grid grid-cols-4 gap-4 md:gap-12">
+          <div className="mt-10 md:mt-16 grid grid-cols-4 gap-4 md:gap-12">
             {items.map((it) => (
               <div key={it.l} className="flex flex-col items-center">
                 <div className="font-serif text-4xl font-light text-gold tabular-nums md:text-7xl">
