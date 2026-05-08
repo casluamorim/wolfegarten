@@ -6,6 +6,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { ALL_ASSET_KEYS, ASSET_LABELS, type AssetKey } from "@/hooks/use-site-asset";
 import { ContentEditor } from "@/components/admin/ContentEditor";
 import { LivePreview } from "@/components/admin/LivePreview";
+import { GalleriesPanel } from "@/components/admin/GalleriesPanel";
+import { PhasePanel } from "@/components/admin/PhasePanel";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminPage,
@@ -14,11 +16,13 @@ export const Route = createFileRoute("/admin/")({
   }),
 });
 
-type Tab = "editar" | "imagens" | "logos" | "leads";
+type Tab = "editar" | "fase" | "imagens" | "galerias" | "logos" | "leads";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "editar", label: "EDITAR SITE" },
+  { id: "fase", label: "FASE & SEÇÕES" },
   { id: "imagens", label: "IMAGENS" },
+  { id: "galerias", label: "GALERIAS" },
   { id: "logos", label: "LOGOS" },
   { id: "leads", label: "LEADS" },
 ];
