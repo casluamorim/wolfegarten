@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Reveal } from "./Reveal";
 import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
 
 const WHATSAPP = "5547988178508"; // Shirlei Lissoni
 
@@ -8,13 +9,30 @@ const schema = z.object({
   nome: z.string().trim().min(2, "Informe seu nome").max(100),
   telefone: z.string().trim().min(8, "Telefone inválido").max(20),
   email: z.string().trim().email("E-mail inválido").max(120),
+  cidade: z.string().trim().min(2, "Informe sua cidade").max(80),
+  como_conheceu: z.string().trim().min(2, "Selecione uma opção").max(80),
 });
 
-export function Confirm() {
-  const [data, setData] = useState({ nome: "", telefone: "", email: "" });
-  const [err, setErr] = useState<string | null>(null);
+const ORIGENS = [
+  "Instagram",
+  "Indicação",
+  "WhatsApp",
+  "Corretor",
+  "Outro",
+];
 
-  const submit = (e: React.FormEvent) => {
+export function Confirm() {
+  const [data, setData] = useState({
+    nome: "",
+    telefone: "",
+    email: "",
+    cidade: "",
+    como_conheceu: "",
+  });
+  const [err, setErr] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const r = schema.safeParse(data);
     if (!r.success) {
@@ -22,9 +40,30 @@ export function Confirm() {
       return;
     }
     setErr(null);
-    const msg = `Olá! Gostaria de confirmar minha presença na Experiência Wolfegarten.%0A%0ANome: ${encodeURIComponent(r.data.nome)}%0ATelefone: ${encodeURIComponent(r.data.telefone)}%0AE-mail: ${encodeURIComponent(r.data.email)}`;
+    setBusy(true);
+    const { error } = await supabase.from("leads").insert(r.data);
+    setBusy(false);
+    if (error) {
+      setErr("Não foi possível registrar. Tente novamente.");
+      return;
+    }
+    const msg =
+      `*Nova confirmação — Experiência Wölfegarten*%0A%0A` +
+      `*Nome:* ${encodeURIComponent(r.data.nome)}%0A` +
+      `*Telefone:* ${encodeURIComponent(r.data.telefone)}%0A` +
+      `*E-mail:* ${encodeURIComponent(r.data.email)}%0A` +
+      `*Cidade:* ${encodeURIComponent(r.data.cidade)}%0A` +
+      `*Como conheceu:* ${encodeURIComponent(r.data.como_conheceu)}`;
     window.open(`https://wa.me/${WHATSAPP}?text=${msg}`, "_blank");
+    setData({ nome: "", telefone: "", email: "", cidade: "", como_conheceu: "" });
   };
+
+  const fields: { name: keyof typeof data; label: string; type?: string }[] = [
+    { name: "nome", label: "NOME" },
+    { name: "telefone", label: "TELEFONE" },
+    { name: "email", label: "E-MAIL", type: "email" },
+    { name: "cidade", label: "CIDADE" },
+  ];
 
   return (
     <section id="confirmar" className="bg-forest-deep py-32 md:py-44">
@@ -42,24 +81,46 @@ export function Confirm() {
 
         <Reveal delay={200}>
           <form onSubmit={submit} className="mt-12 space-y-5 text-left">
-            {(["nome", "telefone", "email"] as const).map((f) => (
-              <div key={f}>
+            {fields.map((f) => (
+              <div key={f.name}>
                 <label className="text-[9px] tracking-luxe text-muted-foreground">
-                  {f === "nome" ? "NOME" : f === "telefone" ? "TELEFONE" : "E-MAIL"}
+                  {f.label}
                 </label>
                 <input
-                  type={f === "email" ? "email" : "text"}
-                  value={data[f]}
-                  onChange={(e) => setData({ ...data, [f]: e.target.value })}
+                  type={f.type ?? "text"}
+                  value={data[f.name]}
+                  onChange={(e) => setData({ ...data, [f.name]: e.target.value })}
                   className="mt-2 w-full border-b border-border bg-transparent py-3 text-sm font-light text-offwhite outline-none transition-colors focus:border-gold"
                   required
                 />
               </div>
             ))}
+
+            <div>
+              <label className="text-[9px] tracking-luxe text-muted-foreground">
+                COMO CONHECEU
+              </label>
+              <select
+                value={data.como_conheceu}
+                onChange={(e) => setData({ ...data, como_conheceu: e.target.value })}
+                required
+                className="mt-2 w-full border-b border-border bg-transparent py-3 text-sm font-light text-offwhite outline-none transition-colors focus:border-gold"
+              >
+                <option value="" disabled className="bg-background">
+                  Selecione
+                </option>
+                {ORIGENS.map((o) => (
+                  <option key={o} value={o} className="bg-background">
+                    {o}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             {err && <p className="text-xs text-destructive">{err}</p>}
             <div className="pt-6 text-center">
-              <button type="submit" className="btn-luxe">
-                Confirmar via WhatsApp
+              <button type="submit" disabled={busy} className="btn-luxe disabled:opacity-50">
+                {busy ? "Enviando..." : "Confirmar via WhatsApp"}
               </button>
             </div>
           </form>
