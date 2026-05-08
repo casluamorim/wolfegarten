@@ -6,6 +6,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { ALL_ASSET_KEYS, ASSET_LABELS, type AssetKey } from "@/hooks/use-site-asset";
 import { ContentEditor } from "@/components/admin/ContentEditor";
 import { LivePreview } from "@/components/admin/LivePreview";
+import { GalleriesPanel } from "@/components/admin/GalleriesPanel";
+import { PhasePanel } from "@/components/admin/PhasePanel";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminPage,
@@ -14,11 +16,13 @@ export const Route = createFileRoute("/admin/")({
   }),
 });
 
-type Tab = "editar" | "imagens" | "logos" | "leads";
+type Tab = "editar" | "fase" | "imagens" | "galerias" | "logos" | "leads";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "editar", label: "EDITAR SITE" },
+  { id: "fase", label: "FASE & SEÇÕES" },
   { id: "imagens", label: "IMAGENS" },
+  { id: "galerias", label: "GALERIAS" },
   { id: "logos", label: "LOGOS" },
   { id: "leads", label: "LEADS" },
 ];
@@ -64,7 +68,7 @@ function AdminPage() {
     );
   }
 
-  const showPreview = tab === "editar" || tab === "imagens" || tab === "logos";
+  const showPreview = tab !== "leads";
 
   return (
     <div className="min-h-screen bg-background">
@@ -102,7 +106,9 @@ function AdminPage() {
         <div className={showPreview ? "grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" : ""}>
           <div>
             {tab === "editar" && <ContentEditor />}
+            {tab === "fase" && <PhasePanel />}
             {tab === "imagens" && <AssetsPanel keys={IMAGE_KEYS} title="Imagens" />}
+            {tab === "galerias" && <GalleriesPanel />}
             {tab === "logos" && <AssetsPanel keys={LOGO_KEYS} title="Logos" />}
             {tab === "leads" && <LeadsPanel />}
           </div>
