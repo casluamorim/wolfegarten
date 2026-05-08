@@ -5,6 +5,7 @@ export type AssetKey =
   | "hero"
   | "experience"
   | "info"
+  | "logo-main"
   | "logo-zah"
   | "logo-stilo"
   | "logo-prisma";
@@ -13,6 +14,7 @@ export const ASSET_LABELS: Record<AssetKey, string> = {
   hero: "Imagem Hero (topo)",
   experience: "Imagem Experiência",
   info: "Imagem Info (final / fundo)",
+  "logo-main": "Logo Principal Wölfegarten (header)",
   "logo-zah": "Logo ZAH",
   "logo-stilo": "Logo Stilo Legacy",
   "logo-prisma": "Logo Prisma Construtora",
@@ -22,6 +24,7 @@ export const ALL_ASSET_KEYS: AssetKey[] = [
   "hero",
   "experience",
   "info",
+  "logo-main",
   "logo-zah",
   "logo-stilo",
   "logo-prisma",

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { useSiteAsset } from "@/hooks/use-site-asset";
 
 export function Navbar() {
+  const logo = useSiteAsset("logo-main");
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
@@ -18,7 +20,11 @@ export function Navbar() {
       }}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-12 md:py-6">
-        <div className="text-[11px] tracking-luxe text-offwhite">WOLFEGARTEN</div>
+        {logo ? (
+          <img src={logo} alt="Wölfegarten" className="h-8 w-auto md:h-10" />
+        ) : (
+          <div className="text-[11px] tracking-luxe text-offwhite">WOLFEGARTEN</div>
+        )}
         <a
           href="#confirmar"
           className="hidden text-[10px] tracking-wide-luxe text-muted-foreground transition-colors hover:text-gold md:block"
