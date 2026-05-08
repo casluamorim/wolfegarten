@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useSiteAsset } from "@/hooks/use-site-asset";
+import { useText } from "@/hooks/use-site-content";
 
 export function Navbar() {
   const logo = useSiteAsset("logo-main");
+  const cta = useText("navbar.cta", "CONFIRMAR PRESENÇA");
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
