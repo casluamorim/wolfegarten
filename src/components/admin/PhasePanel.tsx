@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteContent } from "@/hooks/use-site-content";
 import { useLaunchPhase } from "@/hooks/use-launch";
+import { SimulationPanel } from "./SimulationPanel";
 
 const SECTIONS: { id: string; label: string; phaseNote?: string }[] = [
   { id: "countdown", label: "Contagem regressiva", phaseNote: "Visível somente na Fase 1" },
