@@ -1,26 +1,51 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { LoadingScreen } from "@/components/LoadingScreen";
+import { Navbar } from "@/components/Navbar";
+import { Hero } from "@/components/Hero";
+import { Countdown } from "@/components/Countdown";
+import { Marco } from "@/components/Marco";
+import { Experience } from "@/components/Experience";
+import { Info } from "@/components/Info";
+import { Vagas } from "@/components/Vagas";
+import { Confirm } from "@/components/Confirm";
+import { Footer } from "@/components/Footer";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Wölfegarten — Convite Exclusivo | Alto padrão em Indaial" },
+      {
+        name: "description",
+        content:
+          "Experiência Wölfegarten: convite exclusivo para o lançamento do mais novo loteamento de altíssimo padrão em Indaial, SC. 16 de maio.",
+      },
+      { property: "og:title", content: "Experiência Wölfegarten — Convite Exclusivo" },
+      {
+        property: "og:description",
+        content:
+          "Um encontro para quem está pronto para viver e investir em um novo padrão.",
+      },
+      { property: "og:type", content: "website" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
-
 function Index() {
-  return <PlaceholderIndex />;
+  return (
+    <>
+      <LoadingScreen />
+      <Navbar />
+      <main>
+        <Hero />
+        <Countdown />
+        <Marco />
+        <Experience />
+        <Info />
+        <Vagas />
+        <Confirm />
+      </main>
+      <Footer />
+    </>
+  );
 }

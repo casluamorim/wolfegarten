@@ -1,0 +1,32 @@
+export function Footer() {
+  return (
+    <footer className="border-t border-border bg-background py-16">
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="flex flex-col items-center gap-10 text-center">
+          <div className="text-[11px] tracking-luxe text-offwhite">WÖLFEGARTEN</div>
+          <div className="gold-divider" />
+          <div className="text-[9px] tracking-luxe text-muted-foreground">
+            REALIZAÇÃO
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6">
+            {["ZAH", "STILO LEGACY", "PRISMA CONSTRUTORA"].map((b) => (
+              <div
+                key={b}
+                className="text-xs tracking-wide-luxe text-offwhite/70 transition-colors hover:text-gold"
+              >
+                {b}
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 flex flex-col items-center gap-2 text-[10px] tracking-wide-luxe text-muted-foreground">
+            <div>INDAIAL — SANTA CATARINA</div>
+            <div>(47) 98817-8508</div>
+          </div>
+          <div className="mt-6 text-[9px] tracking-wide-luxe text-muted-foreground/60">
+            © {new Date().getFullYear()} WÖLFEGARTEN — TODOS OS DIREITOS RESERVADOS
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
