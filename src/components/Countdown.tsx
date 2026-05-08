@@ -23,7 +23,11 @@ export function Countdown() {
   const [t, setT] = useState(diff(target));
   useEffect(() => {
     const i = setInterval(() => setT(diff(target)), 1000);
-    return () => clearInterval(i);
+    const off = onSimChange(() => setT(diff(target)));
+    return () => {
+      clearInterval(i);
+      off();
+    };
   }, [target]);
 
   const items = [
