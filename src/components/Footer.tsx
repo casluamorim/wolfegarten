@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useSiteAssets, ASSET_LABELS, type AssetKey } from "@/hooks/use-site-asset";
+import { useText } from "@/hooks/use-site-content";
 
 const LOGOS: { key: AssetKey; fallback: string }[] = [
   { key: "logo-zah", fallback: "ZAH" },
@@ -9,6 +10,9 @@ const LOGOS: { key: AssetKey; fallback: string }[] = [
 
 export function Footer() {
   const { data: assets } = useSiteAssets();
+  const realizacaoLabel = useText("footer.realizacao_label", "REALIZAÇÃO");
+  const city = useText("footer.city", "INDAIAL — SANTA CATARINA");
+  const phone = useText("footer.phone", "(47) 98817-8508");
   return (
     <footer className="border-t border-border bg-background py-16">
       <div className="mx-auto max-w-6xl px-6">
