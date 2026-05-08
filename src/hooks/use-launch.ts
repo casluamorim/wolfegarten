@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteContent } from "./use-site-content";
+import { now as simNow, onSimChange } from "@/lib/simulation";
 
 export type LaunchPhase = "pre" | "post";
 
@@ -9,15 +10,22 @@ function publicUrl(path: string) {
   return supabase.storage.from("site-assets").getPublicUrl(path).data.publicUrl;
 }
 
+/** Re-renders when simulated date changes. */
+export function useSimTick() {
+  const [, setTick] = useState(0);
+  useEffect(() => onSimChange(() => setTick((n) => n + 1)), []);
+}
+
 export function useLaunchPhase(): LaunchPhase {
   const { data } = useSiteContent();
+  useSimTick();
   const mode = (data?.["launch.mode"] as string) ?? "auto";
   if (mode === "pre") return "pre";
   if (mode === "post") return "post";
   const dateStr = (data?.["launch.date"] as string) ?? "";
   const t = new Date(dateStr).getTime();
   if (Number.isNaN(t)) return "pre";
-  return Date.now() >= t ? "post" : "pre";
+  return simNow() >= t ? "post" : "pre";
 }
 
 export function useSectionVisible(id: string, defaultVisible = true): boolean {
