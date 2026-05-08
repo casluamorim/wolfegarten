@@ -1,6 +1,7 @@
 import { Reveal } from "./Reveal";
 import { MapPin, Calendar, Clock } from "lucide-react";
-import infoImg from "@/assets/info-bg.jpg";
+import infoFallback from "@/assets/info-bg.jpg";
+import { useSiteAsset } from "@/hooks/use-site-asset";
 
 const blocks = [
   {
@@ -24,6 +25,7 @@ const blocks = [
 ];
 
 export function Info() {
+  const infoImg = useSiteAsset("info", infoFallback);
   return (
     <section className="relative overflow-hidden py-32 md:py-44">
       <div

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import heroImg from "@/assets/hero-wolfegarten.jpg";
+import heroFallback from "@/assets/hero-wolfegarten.jpg";
+import { useSiteAsset } from "@/hooks/use-site-asset";
 
 export function Hero() {
+  const heroImg = useSiteAsset("hero", heroFallback);
   const [y, setY] = useState(0);
   useEffect(() => {
     const onScroll = () => setY(window.scrollY);
