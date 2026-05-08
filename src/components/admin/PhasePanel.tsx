@@ -52,6 +52,10 @@ export function PhasePanel() {
         </div>
       </div>
 
+      <div className="mt-8">
+        <SimulationPanel />
+      </div>
+
       <div className="mt-8 rounded border border-border bg-card/40 p-5">
         <h3 className="text-sm text-offwhite">Visibilidade das seções</h3>
         <p className="mt-1 text-[11px] text-muted-foreground">
