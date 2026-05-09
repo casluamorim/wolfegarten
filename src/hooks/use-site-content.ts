@@ -8,14 +8,12 @@ export function useSiteContent() {
   const qc = useQueryClient();
 
   useEffect(() => {
-    const ch = supabase
-      .channel("site_content_changes")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "site_content" },
-        () => qc.invalidateQueries({ queryKey: ["site-content"] }),
-      )
-      .subscribe();
+    const ch = supabase.channel(`site_content_changes_${Math.random().toString(36).slice(2)}`);
+    ch.on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "site_content" },
+      () => qc.invalidateQueries({ queryKey: ["site-content"] }),
+    ).subscribe();
     return () => {
       supabase.removeChannel(ch);
     };
