@@ -20,9 +20,7 @@ export function Countdown() {
   const target = new Date(targetStr).getTime();
 
   const [t, setT] = useState({ d: 0, h: 0, m: 0, s: 0 });
-  const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    setMounted(true);
     setT(diff(target));
     const i = setInterval(() => setT(diff(target)), 1000);
     return () => clearInterval(i);
