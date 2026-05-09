@@ -38,8 +38,15 @@ export function LogosPanel() {
     }
   };
 
+  type LogoPatch = {
+    alt?: string | null;
+    link?: string | null;
+    sort_order?: number;
+    active?: boolean;
+    placement?: string;
+  };
   const updateRow = useMutation({
-    mutationFn: async ({ id, patch }: { id: string; patch: Record<string, unknown> }) => {
+    mutationFn: async ({ id, patch }: { id: string; patch: LogoPatch }) => {
       const { error } = await supabase.from("partner_logos").update(patch).eq("id", id);
       if (error) throw error;
     },
