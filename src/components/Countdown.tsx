@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Reveal } from "./Reveal";
 import { useText } from "@/hooks/use-site-content";
+import { useSimulation } from "@/hooks/use-simulation";
 
 function diff(target: number) {
   const d = target - Date.now();
