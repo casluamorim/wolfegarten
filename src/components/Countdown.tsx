@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Reveal } from "./Reveal";
 import { useText } from "@/hooks/use-site-content";
+import { useSimulation } from "@/hooks/use-simulation";
 
 function diff(target: number) {
   const d = target - Date.now();
@@ -18,13 +19,18 @@ export function Countdown() {
   const title = useText("countdown.title", "Para o lançamento oficial");
   const targetStr = useText("countdown.target_date", "2026-05-16T10:00:00-03:00");
   const target = new Date(targetStr).getTime();
+  const sim = useSimulation();
 
   const [t, setT] = useState({ d: 0, h: 0, m: 0, s: 0 });
   useEffect(() => {
-    setT(diff(target));
-    const i = setInterval(() => setT(diff(target)), 1000);
+    const compute = () => {
+      const now = sim.enabled && sim.iso ? new Date(sim.iso).getTime() : Date.now();
+      setT(diff(target - (now - Date.now())));
+    };
+    compute();
+    const i = setInterval(compute, 1000);
     return () => clearInterval(i);
-  }, [target]);
+  }, [target, sim.enabled, sim.iso]);
 
   const items = [
     { v: t.d, l: "DIAS" },

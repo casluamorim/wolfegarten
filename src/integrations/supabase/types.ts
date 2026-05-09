@@ -44,6 +44,39 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_logos: {
+        Row: {
+          active: boolean
+          alt: string | null
+          created_at: string
+          id: string
+          link: string | null
+          placement: string
+          sort_order: number
+          storage_path: string
+        }
+        Insert: {
+          active?: boolean
+          alt?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          placement?: string
+          sort_order?: number
+          storage_path: string
+        }
+        Update: {
+          active?: boolean
+          alt?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          placement?: string
+          sort_order?: number
+          storage_path?: string
+        }
+        Relationships: []
+      }
       site_assets: {
         Row: {
           alt: string | null
