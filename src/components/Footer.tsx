@@ -40,16 +40,17 @@ export function Footer() {
             <>
               <div className="text-[9px] tracking-luxe text-muted-foreground">{realizacaoLabel}</div>
               <div
-                className="grid w-full max-w-3xl items-center justify-items-center"
+                className="grid w-full max-w-3xl items-center justify-items-center wg-logos-grid"
                 style={{
-                  gridTemplateColumns: `repeat(var(--logo-cols, ${colsD}), minmax(0, 1fr))`,
                   gap: `${Math.min(parseInt(gapPx) || 32, 64)}px`,
-                  // @ts-expect-error CSS var
-                  "--logo-cols": colsD,
                 }}
               >
-                <style>{`@media (max-width: 767px){[data-logos-grid]{grid-template-columns:repeat(${colsM},minmax(0,1fr)) !important;}}`}</style>
-                <div data-logos-grid className="contents" />
+                <style>{`
+                  .wg-logos-grid { grid-template-columns: repeat(${Math.max(1, parseInt(colsM) || 2)}, minmax(0,1fr)); }
+                  @media (min-width: 768px) {
+                    .wg-logos-grid { grid-template-columns: repeat(${Math.max(1, parseInt(colsD) || 3)}, minmax(0,1fr)); }
+                  }
+                `}</style>
                 {showLogos.map((l) => {
                   const img = (
                     <img
