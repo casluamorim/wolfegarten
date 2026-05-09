@@ -86,6 +86,33 @@ export type Database = {
         }
         Relationships: []
       }
+      site_galleries: {
+        Row: {
+          active: boolean
+          asset_key: string
+          created_at: string
+          id: string
+          sort_order: number
+          storage_path: string
+        }
+        Insert: {
+          active?: boolean
+          asset_key: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          storage_path: string
+        }
+        Update: {
+          active?: boolean
+          asset_key?: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          storage_path?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
