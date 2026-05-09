@@ -6,6 +6,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { ALL_ASSET_KEYS, ASSET_LABELS, type AssetKey } from "@/hooks/use-site-asset";
 import { ContentEditor } from "@/components/admin/ContentEditor";
 import { LivePreview } from "@/components/admin/LivePreview";
+import { LogosPanel } from "@/components/admin/LogosPanel";
+import { SettingsPanel } from "@/components/admin/SettingsPanel";
+import { SimulationPanel } from "@/components/admin/SimulationPanel";
+import { useSimulation } from "@/hooks/use-simulation";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminPage,
@@ -14,22 +18,28 @@ export const Route = createFileRoute("/admin/")({
   }),
 });
 
-type Tab = "editar" | "imagens" | "logos" | "leads";
+type Tab = "editar" | "midia" | "logos" | "config" | "leads" | "preview";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "editar", label: "EDITAR SITE" },
-  { id: "imagens", label: "IMAGENS" },
+  { id: "midia", label: "MÍDIA" },
   { id: "logos", label: "LOGOS" },
+  { id: "config", label: "CONFIGURAÇÕES" },
   { id: "leads", label: "LEADS" },
+  { id: "preview", label: "PREVIEW & SIMULAÇÃO" },
 ];
 
-const IMAGE_KEYS: AssetKey[] = ALL_ASSET_KEYS.filter((k) => !k.startsWith("logo-"));
-const LOGO_KEYS: AssetKey[] = ALL_ASSET_KEYS.filter((k) => k.startsWith("logo-"));
+// Tudo que não é logo categorizada continua na aba Mídia.
+// A "logo-main" continua editável aqui (única identificada).
+const MEDIA_KEYS: AssetKey[] = ALL_ASSET_KEYS.filter(
+  (k) => !k.startsWith("logo-") || k === "logo-main",
+);
 
 function AdminPage() {
   const { session, loading } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("editar");
+  const sim = useSimulation();
 
   useEffect(() => {
     if (!loading && !session) navigate({ to: "/admin/login" });
@@ -64,17 +74,17 @@ function AdminPage() {
     );
   }
 
-  const showPreview = tab === "editar" || tab === "imagens" || tab === "logos";
+  const showPreview = tab === "editar" || tab === "midia" || tab === "logos";
 
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">
-        <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-6">
+        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4 px-4 py-4 md:px-6 md:py-6">
           <Link to="/" className="text-[11px] tracking-luxe text-offwhite">
             WÖLFEGARTEN · ADMIN
           </Link>
           <div className="flex items-center gap-4">
-            <span className="text-[10px] text-muted-foreground">{session.user.email}</span>
+            <span className="hidden text-[10px] text-muted-foreground md:inline">{session.user.email}</span>
             <button
               onClick={() => supabase.auth.signOut().then(() => navigate({ to: "/admin/login" }))}
               className="text-[10px] tracking-luxe text-muted-foreground hover:text-gold"
@@ -83,12 +93,12 @@ function AdminPage() {
             </button>
           </div>
         </div>
-        <nav className="mx-auto flex max-w-[1600px] gap-8 px-6">
+        <nav className="mx-auto flex max-w-[1600px] gap-5 overflow-x-auto px-4 md:gap-8 md:px-6">
           {TABS.map((t) => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`pb-4 text-[10px] tracking-luxe transition-colors ${
+              className={`whitespace-nowrap pb-4 text-[10px] tracking-luxe transition-colors ${
                 tab === t.id ? "border-b border-gold text-gold" : "text-muted-foreground"
               }`}
             >
@@ -98,13 +108,22 @@ function AdminPage() {
         </nav>
       </header>
 
-      <main className="mx-auto max-w-[1600px] px-6 py-8">
+      {sim.enabled && (
+        <div className="border-b border-gold/40 bg-gold/10 px-4 py-2 text-center text-[10px] tracking-luxe text-gold">
+          MODO SIMULAÇÃO ATIVO · {sim.iso ? new Date(sim.iso).toLocaleString("pt-BR") : "data não definida"}
+          <button onClick={sim.clear} className="ml-3 underline hover:text-offwhite">desligar</button>
+        </div>
+      )}
+
+      <main className="mx-auto max-w-[1600px] px-4 py-6 md:px-6 md:py-8">
         <div className={showPreview ? "grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" : ""}>
           <div>
             {tab === "editar" && <ContentEditor />}
-            {tab === "imagens" && <AssetsPanel keys={IMAGE_KEYS} title="Imagens" />}
-            {tab === "logos" && <AssetsPanel keys={LOGO_KEYS} title="Logos" />}
+            {tab === "midia" && <AssetsPanel keys={MEDIA_KEYS} title="Mídia" />}
+            {tab === "logos" && <LogosPanel />}
+            {tab === "config" && <SettingsPanel />}
             {tab === "leads" && <LeadsPanel />}
+            {tab === "preview" && <SimulationPanel />}
           </div>
           {showPreview && <LivePreview />}
         </div>
@@ -224,7 +243,7 @@ function AssetsPanel({ keys, title }: { keys: AssetKey[]; title: string }) {
     <div>
       <h2 className="font-serif text-3xl text-offwhite">{title}</h2>
       <p className="mt-1 text-xs text-muted-foreground">
-        Arraste e solte ou clique para enviar. Atualização imediata no site.
+        Hero, seção Experiência, fundo final e logo principal. As demais logos ficam na aba <strong>Logos</strong>.
       </p>
       <div className="mt-8 grid gap-5 md:grid-cols-2">
         {keys.map((k) => (
