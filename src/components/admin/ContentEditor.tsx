@@ -38,7 +38,7 @@ export const SECTIONS: ContentSection[] = [
   {
     id: "hero",
     title: "Hero (capa)",
-    description: "Imagem editável na aba Imagens.",
+    description: "Imagem ou vídeo cinematográfico de fundo. Mídia editável na aba Mídia ou pelos campos de URL abaixo.",
     fields: [
       { key: "hero.eyebrow", label: "Etiqueta superior" },
       { key: "hero.kicker", label: "Subtítulo pequeno" },
@@ -46,6 +46,11 @@ export const SECTIONS: ContentSection[] = [
       { key: "hero.title_line2", label: "Título — linha 2 (destaque dourado)" },
       { key: "hero.subtitle", label: "Subtítulo (use Enter para nova linha)", kind: "textarea" },
       { key: "hero.cta", label: "Texto do botão" },
+      { key: "hero.video_url", label: "URL do Vídeo (desktop)", kind: "url", hint: "MP4/WebM. Deixe vazio para usar imagem." },
+      { key: "hero.video_url_mobile", label: "URL do Vídeo (mobile, opcional)", kind: "url" },
+      { key: "hero.video_poster", label: "Poster do vídeo (URL)", kind: "url" },
+      { key: "hero.video_autoplay", label: "Autoplay (true / false)" },
+      { key: "hero.video_loop", label: "Loop infinito (true / false)" },
     ],
   },
   {
