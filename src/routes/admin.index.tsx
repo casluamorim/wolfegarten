@@ -277,12 +277,17 @@ function AssetCard({ assetKey }: { assetKey: AssetKey }) {
     setBusy(true);
     setErr(null);
     try {
-      if (file.size > 8 * 1024 * 1024) throw new Error("Máx 8MB");
-      const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+      const isVideo = file.type.startsWith("video/");
+      const limit = isVideo ? 2 * 1024 * 1024 * 1024 : 50 * 1024 * 1024;
+      if (file.size > limit) throw new Error(isVideo ? "Vídeo acima de 2GB" : "Imagem acima de 50MB");
+      const { toWebpIfRaster } = await import("@/lib/img-to-webp");
+      const optimized = isVideo ? file : await toWebpIfRaster(file, 0.9, 3200);
+      const ext = optimized.name.split(".").pop()?.toLowerCase() ?? (isVideo ? "mp4" : "webp");
       const path = `${assetKey}-${Date.now()}.${ext}`;
-      const up = await supabase.storage.from("site-assets").upload(path, file, {
-        cacheControl: "3600",
+      const up = await supabase.storage.from("site-assets").upload(path, optimized, {
+        cacheControl: "31536000",
         upsert: false,
+        contentType: optimized.type || file.type,
       });
       if (up.error) throw up.error;
       const { error } = await supabase
@@ -321,7 +326,7 @@ function AssetCard({ assetKey }: { assetKey: AssetKey }) {
       >
         <input
           type="file"
-          accept={isLogo ? "image/png,image/svg+xml,image/webp" : "image/jpeg,image/png,image/webp"}
+          accept={isLogo ? "image/png,image/svg+xml,image/webp,image/jpeg" : "image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm"}
           className="hidden"
           disabled={busy}
           onChange={(e) => e.target.files?.[0] && onUpload(e.target.files[0])}
@@ -334,7 +339,7 @@ function AssetCard({ assetKey }: { assetKey: AssetKey }) {
           />
         ) : (
           <span className="text-[10px] tracking-luxe text-muted-foreground">
-            {busy ? "ENVIANDO..." : "ARRASTE OU CLIQUE"}
+            {busy ? "ENVIANDO..." : "ARRASTE OU CLIQUE (até 2GB para vídeos)"}
           </span>
         )}
       </label>
