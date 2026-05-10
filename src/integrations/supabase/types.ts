@@ -48,6 +48,7 @@ export type Database = {
         Row: {
           active: boolean
           alt: string | null
+          category: string
           created_at: string
           id: string
           link: string | null
@@ -58,6 +59,7 @@ export type Database = {
         Insert: {
           active?: boolean
           alt?: string | null
+          category?: string
           created_at?: string
           id?: string
           link?: string | null
@@ -68,6 +70,7 @@ export type Database = {
         Update: {
           active?: boolean
           alt?: string | null
+          category?: string
           created_at?: string
           id?: string
           link?: string | null
