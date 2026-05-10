@@ -2,12 +2,15 @@ import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+export type LogoCategory = "realizacao" | "apoio";
+
 export interface PartnerLogo {
   id: string;
   storage_path: string;
   alt: string | null;
   link: string | null;
   placement: string;
+  category: LogoCategory;
   sort_order: number;
   active: boolean;
   created_at: string;
