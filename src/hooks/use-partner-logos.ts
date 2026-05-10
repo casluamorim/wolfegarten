@@ -47,6 +47,7 @@ export function usePartnerLogos(opts: { onlyActive?: boolean } = {}) {
       if (error) throw error;
       return (data ?? []).map((row) => ({
         ...row,
+        category: (row.category === "apoio" ? "apoio" : "realizacao") as LogoCategory,
         url: supabase.storage.from("site-assets").getPublicUrl(row.storage_path).data.publicUrl,
       }));
     },
