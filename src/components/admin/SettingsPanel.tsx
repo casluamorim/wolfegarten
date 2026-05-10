@@ -19,12 +19,14 @@ const SECTIONS: S[] = [
   {
     id: "social",
     title: "Redes Sociais",
-    description: "URLs completas. Deixe em branco para não exibir.",
+    description: "URLs completas. Deixe em branco para esconder o ícone.",
     fields: [
       { key: "social.instagram", label: "Instagram", kind: "url" },
       { key: "social.facebook", label: "Facebook", kind: "url" },
       { key: "social.linkedin", label: "LinkedIn", kind: "url" },
       { key: "social.youtube", label: "YouTube", kind: "url" },
+      { key: "social.tiktok", label: "TikTok", kind: "url" },
+      { key: "social.whatsapp", label: "WhatsApp (link wa.me, opcional)", kind: "url", hint: "Se vazio, usa o número de Contato." },
     ],
   },
   {

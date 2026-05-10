@@ -15,7 +15,7 @@ export function Info() {
   ];
 
   return (
-    <section className="relative overflow-hidden py-32 md:py-44">
+    <section className="relative overflow-hidden py-20 md:py-28">
       <div
         className="absolute inset-0 scale-110"
         style={{
@@ -36,7 +36,7 @@ export function Info() {
           </Reveal>
         </div>
 
-        <div className="mt-16 grid grid-cols-1 gap-12 md:grid-cols-3">
+        <div className="mt-10 grid grid-cols-1 gap-10 md:mt-14 md:grid-cols-3 md:gap-12">
           {blocks.map((b, i) => (
             <Reveal key={b.label} delay={i * 200}>
               <div className="text-center">
