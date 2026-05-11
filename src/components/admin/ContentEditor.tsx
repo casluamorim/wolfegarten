@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteContent } from "@/hooks/use-site-content";
+import { MediaPicker } from "@/components/admin/MediaPicker";
+import type { MediaKind } from "@/hooks/use-media-library";
 
-type FieldKind = "text" | "textarea" | "url" | "datetime" | "tel";
+type FieldKind = "text" | "textarea" | "url" | "datetime" | "tel" | "media";
 
 export interface ContentField {
   key: string;
