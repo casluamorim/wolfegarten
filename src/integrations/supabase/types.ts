@@ -44,6 +44,54 @@ export type Database = {
         }
         Relationships: []
       }
+      media_library: {
+        Row: {
+          alt: string | null
+          bytes: number | null
+          created_at: string
+          duration: number | null
+          height: number | null
+          id: string
+          kind: string
+          mime: string | null
+          poster_path: string | null
+          storage_path: string
+          tags: string[]
+          variants: Json
+          width: number | null
+        }
+        Insert: {
+          alt?: string | null
+          bytes?: number | null
+          created_at?: string
+          duration?: number | null
+          height?: number | null
+          id?: string
+          kind: string
+          mime?: string | null
+          poster_path?: string | null
+          storage_path: string
+          tags?: string[]
+          variants?: Json
+          width?: number | null
+        }
+        Update: {
+          alt?: string | null
+          bytes?: number | null
+          created_at?: string
+          duration?: number | null
+          height?: number | null
+          id?: string
+          kind?: string
+          mime?: string | null
+          poster_path?: string | null
+          storage_path?: string
+          tags?: string[]
+          variants?: Json
+          width?: number | null
+        }
+        Relationships: []
+      }
       partner_logos: {
         Row: {
           active: boolean
