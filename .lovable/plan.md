@@ -1,123 +1,130 @@
-# Plano de evolução — sem quebrar o site público
+# Plano — Mídia Central, Vídeos Nativos, Logos Flexíveis e Fase 2
 
-## Princípio nº 1: site público intocável
+Tudo será desenvolvido sem quebrar o site público atual. As mudanças visuais já existentes na home permanecem; novas páginas da Fase 2 ficam apenas no painel + rota `/admin/preview` até o lançamento.
 
-Tudo que está no ar hoje (`/`) continua exibindo a versão de pré-lançamento. Nada da Fase 2 vaza para o público até a data oficial — ou até o admin liberar manualmente.
+---
 
-Estratégia:
-- A renderização da home continua exatamente como está (Hero → Countdown → Marco → Experience → Info → Vagas → Confirm → Footer).
-- A versão institucional da Fase 2 será desenvolvida em **componentes/rotas separadas**, nunca substituindo os atuais.
-- A troca acontece via uma flag no `site_content` (`launch.phase` = `pre` | `live`) + verificação de data. Por padrão fica `pre`. Só muda quando o admin explicitamente liberar OU quando a data oficial chegar e a flag `auto_switch` estiver ativa.
+## 1. Biblioteca de Mídia Central (nova aba "Mídia")
 
-## 1. Ambiente de simulação / preview interno
+Tabela única `media_library` (substitui referências soltas a URLs):
 
-- Nova rota privada: `/admin/preview` (exige login admin).
-- Reutiliza os mesmos componentes do site, mas envolvidos num `SimulationProvider` que injeta uma data simulada e força `phase = live` ou `pre`.
-- Toggle no painel: **"Ativar modo simulação"** + campo datetime **"Simular data e horário"**.
-- A simulação grava só em `localStorage` do admin — nunca toca no banco e nunca afeta visitantes.
-- Botões: "Ver como pré-lançamento", "Ver como pós-lançamento", "Ver na data X".
-
-## 2. Simulador de data no painel
-
-- Componente `SimulationBar` no topo do `/admin` quando ativo.
-- Mostra a data simulada e link "Abrir preview com essa data".
-- Não substitui `Date.now()` globalmente; só passa via contexto para os componentes que dependem de data (Countdown, lógica de fase).
-
-## 3. Reorganização do painel (`/admin`)
-
-Abas finais:
-
-| Aba | Conteúdo |
-|---|---|
-| **Editar Site** | Textos, títulos, botões, contador, menus, SEO por seção |
-| **Mídia** | Biblioteca única de imagens/renders/vídeos, com seleção de "onde usar" |
-| **Logos & Parceiros** | Logo principal (única identificada) + lista livre de logos |
-| **Configurações** | Redes sociais, WhatsApp, contatos, links, SEO global, Analytics, Meta Pixel, favicon, dados institucionais |
-| **Leads** | (mantém) CRM + export CSV |
-| **Preview / Simulação** | Modo simulação + visualização Fase 1 / Fase 2 |
-
-## 4. Sistema de Mídia unificado
-
-Nova tabela `media_library`:
-- `id`, `storage_path`, `title`, `tags[]`, `width`, `height`, `mime`, `created_at`
-- Upload drag-and-drop, compressão automática no client (canvas → webp quando possível).
-- Cada "slot" do site (hero, info, experience, etc.) vira um **seletor de mídia** que aponta para um `media_id` — não mais URL solta.
-- Lazy loading + `loading="lazy"` + `decoding="async"` em todas as `<img>`.
-
-## 5. Logos livres (sem categoria fixa)
-
-- Mantém apenas `logo-main` como chave reservada (header).
-- Todas as outras logos vão para uma tabela `partner_logos`:
-  - `id`, `storage_path`, `link`, `sort_order`, `active`, `placement` (`footer` | `hero` | `section` | `all`)
-- Painel mostra grid com drag-and-drop para reordenar, toggle ativo/inativo, botão remover.
-- Configurações globais do bloco de logos: `cols_desktop`, `cols_mobile`, `logo_height`, `gap`.
-- Atualização em tempo real no site público via Realtime (já temos a infra).
-
-## 6. Aba Configurações
-
-Campos no `site_content` (chaves novas):
-- `social.instagram`, `social.facebook`, `social.linkedin`, `social.youtube`
-- `contact.whatsapp`, `contact.email`, `contact.phone`, `contact.address`
-- `seo.global_title`, `seo.global_description`, `seo.favicon`, `seo.og_default`
-- `analytics.ga4_id`, `analytics.meta_pixel_id`
-- `institutional.cnpj`, `institutional.razao_social`
-
-Os scripts de GA4 e Meta Pixel são injetados condicionalmente quando os IDs estiverem preenchidos.
-
-## 7. Responsividade premium mobile
-
-Passo focado em frontend (sem mexer em lógica):
-- Tipografia fluida com `clamp()` em headings e parágrafos.
-- Reduzir paddings verticais em mobile: `py-28 md:py-40` → `py-16 md:py-32` em todas as seções pesadas.
-- Hero: ajustar altura (`min-h-screen` → `min-h-[88svh]` no mobile, evita barra de URL cortando).
-- Countdown: reduzir tamanho dos números no mobile e tightening do gap.
-- Confirm form: inputs maiores no mobile (`h-12`), labels mais legíveis.
-- `prefers-reduced-motion` respeitado nas animações.
-- `loading="lazy"` + `decoding="async"` em todas as imagens não-hero.
-
-## 8. Performance
-
-- Confirmar que rotas admin já estão code-split (estão, são `.tsx` separados).
-- Imagens do hero/finais convertidas para `.webp` no upload.
-- `<link rel="preload">` apenas para o hero crítico.
-- Sem mudar o build setup; só ajustes pontuais.
-
-## Ordem de execução (entregas incrementais, cada uma sem quebrar o site)
-
-1. **Migração DB**: novas chaves em `site_content` (configurações, social), tabelas `media_library` e `partner_logos`. Sem remover nada antigo.
-2. **SimulationProvider + Preview**: nova rota `/admin/preview`, contexto isolado.
-3. **Reorganização do painel** em 6 abas, mantendo todo o editor existente.
-4. **Mídia unificada**: nova aba; assets antigos continuam funcionando até serem migrados.
-5. **Logos livres**: nova UI de logos + atualização do `Footer` para ler de `partner_logos`.
-6. **Aba Configurações** com injeção de Analytics/Pixel.
-7. **Polimento mobile**: ajustes de spacing/tipografia nos componentes públicos.
-
-Cada passo é commit isolado. Se algo der ruim em um passo, os anteriores continuam funcionando.
-
-## Detalhes técnicos (referência interna)
-
-```text
-site_content (JSONB)
-├── launch.phase            "pre" | "live"
-├── launch.auto_switch      boolean
-├── social.*                strings
-├── contact.*               strings
-├── analytics.ga4_id        string
-├── analytics.meta_pixel_id string
-└── logos.layout            { cols_desktop, cols_mobile, height, gap }
-
+```
 media_library
-  id uuid PK, storage_path text, title text, tags text[],
-  width int, height int, mime text, created_at timestamptz
-
-partner_logos
-  id uuid PK, storage_path text, link text, sort_order int,
-  active bool, placement text, created_at timestamptz
+- id, kind ('image' | 'video' | 'logo' | 'render')
+- storage_path, mime, bytes, width, height, duration
+- poster_path (vídeos)
+- variants jsonb  → { mobile, hls, webm, mp4_720, mp4_1080 }
+- alt, tags text[], created_at
 ```
 
-Realtime já está habilitado em `site_content`; adicionar para `partner_logos` para atualização instantânea.
+Nova aba "Mídia" no admin com:
+- Grid visual premium (preview de imagem ou thumbnail de vídeo)
+- Filtros por tipo (Imagens / Vídeos / Logos / Renders) + busca por alt/tags
+- Drag-and-drop de upload (imagens, vídeos, renders) — uma única zona
+- Imagens convertidas em WebP no client (já existe `img-to-webp`)
+- Vídeos enviados direto ao bucket `site-assets/videos/` (até 2GB)
+- Modal de detalhe: alt, tags, substituição, exclusão
 
-## O que NÃO está no escopo deste plano (fica para depois)
+## 2. Upload e Processamento de Vídeo
 
-- Páginas institucionais completas da Fase 2 (Masterplan, Galeria, Plantas, Localização, Tour 3D). Vamos só **preparar a estrutura** e ambiente de preview; o conteúdo dessas páginas entra num próximo ciclo.
-- Vídeos: a coluna existe na biblioteca de mídia, mas o player de vídeo no site fica para a Fase 2.
+- Upload direto via Supabase Storage (chunked) — sem YouTube
+- **Poster automático**: gerado no client com `<video>` + `canvas` no primeiro frame (sem servidor)
+- **Versão mobile**: client-side via `MediaRecorder` quando viável; caso contrário usa o mesmo arquivo com `preload="metadata"` (transcoding pesado real exigiria worker dedicado — fora do escopo agora; deixo um campo `video_url_mobile` opcional para upload manual de versão leve)
+- HLS real e transcoding multi-bitrate exigem infra externa (mux/cloudflare-stream). **Recomendação:** usar entrega via `<video>` com `preload="metadata"` + poster + `range requests` do Storage (já suportado). Adicionar HLS depois com Cloudflare Stream se precisar.
+
+> Vou anotar isso no painel: "para vídeos >200MB recomenda-se compressão prévia ou ativar Cloudflare Stream".
+
+## 3. Correção do Hero
+
+Problema atual: imagem renderiza junto com vídeo.
+
+Correção em `Hero.tsx`:
+- Se houver `video_url`: renderiza somente `<video>` com `poster={image}`
+- Imagem fica como poster nativo do `<video>` (desaparece automaticamente quando o vídeo dá play)
+- Estado `videoReady` controla fade-out de qualquer fallback
+- Botão "ATIVAR SOM / SILENCIAR" já existe; manter
+- `autoplay muted loop playsInline` mantidos
+
+## 4. Seletor de Mídia nas Seções
+
+Substituir os campos de URL pura por `<MediaPicker />` que:
+- Lista a biblioteca filtrada
+- Permite alternar Imagem / Vídeo
+- Salva `media_id` no `site_content` (com fallback para URL legada)
+
+Aplicado em: Hero, Experience cards, Marco, futuras Galerias.
+
+## 5. Logos — Centralização e Colunas Independentes
+
+Schema:
+```
+ALTER TABLE partner_logos: já tem category
+site_content keys novas:
+  logos.realizacao.cols_desktop / cols_mobile / height / gap / align
+  logos.apoio.cols_desktop / cols_mobile / height / gap / align
+```
+
+`Footer.tsx` renderiza dois grids separados, cada um com:
+- `display: grid; grid-template-columns: repeat(N, minmax(0,1fr))`
+- `justify-content: center; place-items: center`
+- Wrapper `mx-auto max-w-fit` quando logos < cols (centraliza naturalmente)
+- Responsivo: cols_mobile no breakpoint < md
+
+Painel `LogosPanel.tsx` ganha bloco de configuração por categoria (cols/height/gap).
+
+## 6. Estrutura Interna da Fase 2
+
+Criar rotas internas (não linkadas no menu público até `launch.phase === 'live'`):
+
+```
+/admin/preview/empreendimento
+/admin/preview/infraestrutura
+/admin/preview/lazer
+/admin/preview/masterplan
+/admin/preview/galeria
+/admin/preview/videos
+/admin/preview/localizacao
+/admin/preview/contato
+```
+
+Cada uma com componentes prontos lendo de `site_content` (chaves `phase2.*`). Visíveis apenas no preview do admin.
+
+`Confirm.tsx` e `Navbar.tsx` já leem de `site_content` — adicionar lógica:
+```
+if (launchPhase === 'live') {
+  cta = "Agendar uma Visita"
+  title = phase2.confirm.title
+  ...
+}
+```
+
+Toggle automático via `launch.auto_switch` + `launch.target_date` (já existe via SimulationPanel).
+
+## 7. Migração SQL
+
+Uma migration cria:
+- Tabela `media_library` + RLS (público lê, admin escreve) + Realtime
+- Chaves novas em `site_content` (logos config + phase2.*)
+
+## Arquivos a criar/editar
+
+**Novos:**
+- `src/components/admin/MediaLibrary.tsx`
+- `src/components/admin/MediaPicker.tsx`
+- `src/hooks/use-media-library.ts`
+- `src/lib/video-poster.ts` (gera poster client-side)
+- `src/routes/admin.preview.$page.tsx` (preview Fase 2)
+- `supabase/migrations/...media_library.sql`
+
+**Editar:**
+- `src/components/Hero.tsx` (priorizar vídeo)
+- `src/components/Footer.tsx` (grids centralizados, cols por categoria)
+- `src/components/admin/LogosPanel.tsx` (config por categoria)
+- `src/components/admin/ContentEditor.tsx` (MediaPicker no Hero)
+- `src/routes/admin.index.tsx` (aba Mídia substitui upload por libraria central)
+
+## Fora de escopo (transparência)
+- HLS real e transcoding multi-bitrate em background: precisaria Cloudflare Stream / mux.com. Posso integrar depois se quiser.
+- Páginas da Fase 2: estrutura/skeleton + edição via CMS. Conteúdo final (textos, galerias) você preenche pelo painel quando tiver.
+
+Posso seguir?
