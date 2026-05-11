@@ -1,18 +1,39 @@
 import { Link } from "@tanstack/react-router";
 import { useSiteAsset } from "@/hooks/use-site-asset";
 import { useText } from "@/hooks/use-site-content";
-import { usePartnerLogos, type PartnerLogoWithUrl } from "@/hooks/use-partner-logos";
+import { usePartnerLogos, type PartnerLogoWithUrl, type LogoCategory } from "@/hooks/use-partner-logos";
 import { SocialIcons } from "@/components/SocialIcons";
+
+interface CatLayout {
+  colsD: number;
+  colsM: number;
+  height: number;
+  gap: number;
+}
+
+function num(v: string | undefined, fb: number) {
+  const n = parseInt(v ?? "");
+  return Number.isFinite(n) && n > 0 ? n : fb;
+}
 
 export function Footer() {
   const realizacaoLabel = useText("logos.realizacao_label", useText("footer.realizacao_label", "REALIZAÇÃO"));
   const apoioLabel = useText("logos.apoio_label", "APOIO");
   const city = useText("contact.address", useText("footer.city", "INDAIAL — SANTA CATARINA"));
   const phone = useText("contact.phone", useText("footer.phone", "(47) 98817-8508"));
-  const colsD = useText("logos.cols_desktop", "3");
-  const colsM = useText("logos.cols_mobile", "2");
-  const heightPx = useText("logos.height", "40");
-  const gapPx = useText("logos.gap", "48");
+
+  const realLayout: CatLayout = {
+    colsD: num(useText("logos.realizacao.cols_desktop", "3"), 3),
+    colsM: num(useText("logos.realizacao.cols_mobile", "2"), 2),
+    height: num(useText("logos.realizacao.height", "48"), 48),
+    gap: num(useText("logos.realizacao.gap", "48"), 48),
+  };
+  const apoioLayout: CatLayout = {
+    colsD: num(useText("logos.apoio.cols_desktop", "4"), 4),
+    colsM: num(useText("logos.apoio.cols_mobile", "2"), 2),
+    height: num(useText("logos.apoio.height", "36"), 36),
+    gap: num(useText("logos.apoio.gap", "40"), 40),
+  };
 
   const { data: logos } = usePartnerLogos({ onlyActive: true });
   const realizacao = (logos ?? []).filter((l) => l.category === "realizacao");
@@ -30,38 +51,13 @@ export function Footer() {
       alt: "",
       storage_path: "",
       placement: "footer",
-      category: "realizacao" as const,
+      category: "realizacao" as LogoCategory,
       sort_order: i,
       active: true,
       created_at: "",
     }));
 
   const realizacaoFinal = realizacao.length ? realizacao : legacy;
-
-  const renderGrid = (items: PartnerLogoWithUrl[]) => (
-    <div
-      className="grid w-full max-w-3xl items-center justify-items-center wg-logos-grid"
-      style={{ gap: `${Math.min(parseInt(gapPx) || 32, 64)}px` }}
-    >
-      {items.map((l) => {
-        const img = (
-          <img
-            src={l.url}
-            alt={l.alt ?? ""}
-            loading="lazy"
-            decoding="async"
-            style={{ height: `${parseInt(heightPx) || 40}px` }}
-            className="w-auto opacity-80 transition-opacity hover:opacity-100"
-          />
-        );
-        return l.link ? (
-          <a key={l.id} href={l.link} target="_blank" rel="noreferrer">{img}</a>
-        ) : (
-          <div key={l.id}>{img}</div>
-        );
-      })}
-    </div>
-  );
 
   return (
     <footer className="border-t border-border bg-background py-10 md:py-14">
@@ -70,25 +66,12 @@ export function Footer() {
           <div className="text-[11px] tracking-luxe text-offwhite">WÖLFEGARTEN</div>
           <div className="gold-divider" />
 
-          <style>{`
-            .wg-logos-grid { grid-template-columns: repeat(${Math.max(1, parseInt(colsM) || 2)}, minmax(0,1fr)); }
-            @media (min-width: 768px) {
-              .wg-logos-grid { grid-template-columns: repeat(${Math.max(1, parseInt(colsD) || 3)}, minmax(0,1fr)); }
-            }
-          `}</style>
-
           {realizacaoFinal.length > 0 && (
-            <div className="flex w-full flex-col items-center gap-4">
-              <div className="text-[9px] tracking-luxe text-muted-foreground">{realizacaoLabel}</div>
-              {renderGrid(realizacaoFinal)}
-            </div>
+            <LogoBlock label={realizacaoLabel} items={realizacaoFinal} layout={realLayout} slug="realizacao" />
           )}
 
           {apoio.length > 0 && (
-            <div className="flex w-full flex-col items-center gap-4 pt-2">
-              <div className="text-[9px] tracking-luxe text-muted-foreground">{apoioLabel}</div>
-              {renderGrid(apoio)}
-            </div>
+            <LogoBlock label={apoioLabel} items={apoio} layout={apoioLayout} slug="apoio" />
           )}
 
           <SocialIcons className="mt-2" />
@@ -104,5 +87,60 @@ export function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+function LogoBlock({
+  label,
+  items,
+  layout,
+  slug,
+}: {
+  label: string;
+  items: PartnerLogoWithUrl[];
+  layout: CatLayout;
+  slug: string;
+}) {
+  // Centralização: cols efetivas = min(itens, cols configurado)
+  const colsD = Math.min(items.length, layout.colsD);
+  const colsM = Math.min(items.length, layout.colsM);
+  const cls = `wg-logos-${slug}`;
+  return (
+    <div className="flex w-full flex-col items-center gap-4 pt-2">
+      <div className="text-[9px] tracking-luxe text-muted-foreground">{label}</div>
+      <style>{`
+        .${cls} {
+          display: grid;
+          grid-template-columns: repeat(${colsM}, minmax(0,1fr));
+          gap: ${Math.min(layout.gap, 80)}px;
+          place-items: center;
+          justify-content: center;
+          margin-left: auto;
+          margin-right: auto;
+        }
+        @media (min-width: 768px) {
+          .${cls} { grid-template-columns: repeat(${colsD}, minmax(0,1fr)); }
+        }
+      `}</style>
+      <div className={`${cls} max-w-3xl`}>
+        {items.map((l) => {
+          const img = (
+            <img
+              src={l.url}
+              alt={l.alt ?? ""}
+              loading="lazy"
+              decoding="async"
+              style={{ height: `${layout.height}px` }}
+              className="w-auto opacity-80 transition-opacity hover:opacity-100"
+            />
+          );
+          return l.link ? (
+            <a key={l.id} href={l.link} target="_blank" rel="noreferrer">{img}</a>
+          ) : (
+            <div key={l.id}>{img}</div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
