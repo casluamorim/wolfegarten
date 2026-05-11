@@ -7,6 +7,7 @@ import { ALL_ASSET_KEYS, ASSET_LABELS, type AssetKey } from "@/hooks/use-site-as
 import { ContentEditor } from "@/components/admin/ContentEditor";
 import { LivePreview } from "@/components/admin/LivePreview";
 import { LogosPanel } from "@/components/admin/LogosPanel";
+import { MediaLibrary } from "@/components/admin/MediaLibrary";
 import { SettingsPanel } from "@/components/admin/SettingsPanel";
 import { SimulationPanel } from "@/components/admin/SimulationPanel";
 import { useSimulation } from "@/hooks/use-simulation";
@@ -119,7 +120,16 @@ function AdminPage() {
         <div className={showPreview ? "grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" : ""}>
           <div>
             {tab === "editar" && <ContentEditor />}
-            {tab === "midia" && <AssetsPanel keys={MEDIA_KEYS} title="Mídia" />}
+            {tab === "midia" && (
+              <div className="space-y-10">
+                <MediaLibrary />
+                <div>
+                  <h3 className="font-serif text-2xl text-offwhite">Identidade & assets fixos</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">Logo principal e assets identificados (opcional — uso legado).</p>
+                  <div className="mt-6"><AssetsPanel keys={MEDIA_KEYS} title="" /></div>
+                </div>
+              </div>
+            )}
             {tab === "logos" && <LogosPanel />}
             {tab === "config" && <SettingsPanel />}
             {tab === "leads" && <LeadsPanel />}
