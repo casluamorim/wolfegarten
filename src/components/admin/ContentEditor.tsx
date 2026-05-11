@@ -247,7 +247,11 @@ function FieldRow({ field, value }: { field: ContentField; value: string }) {
           {status === "error" && "erro"}
         </span>
       </div>
-      {kind === "textarea" ? (
+      {kind === "media" ? (
+        <div className="mt-2">
+          <MediaPicker value={val} onChange={onChange} kinds={field.mediaKinds ?? ["image", "video"]} />
+        </div>
+      ) : kind === "textarea" ? (
         <textarea
           value={val}
           onChange={(e) => onChange(e.target.value)}
