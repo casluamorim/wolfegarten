@@ -11,6 +11,14 @@ export interface ContentField {
   label: string;
   kind?: FieldKind;
   hint?: string;
+  mediaKinds?: MediaKind[];
+}
+
+export interface ContentField {
+  key: string;
+  label: string;
+  kind?: FieldKind;
+  hint?: string;
 }
 
 export interface ContentSection {
@@ -48,9 +56,9 @@ export const SECTIONS: ContentSection[] = [
       { key: "hero.title_line2", label: "Título — linha 2 (destaque dourado)" },
       { key: "hero.subtitle", label: "Subtítulo (use Enter para nova linha)", kind: "textarea" },
       { key: "hero.cta", label: "Texto do botão" },
-      { key: "hero.video_url", label: "URL do Vídeo (desktop)", kind: "url", hint: "MP4/WebM. Deixe vazio para usar imagem." },
-      { key: "hero.video_url_mobile", label: "URL do Vídeo (mobile, opcional)", kind: "url" },
-      { key: "hero.video_poster", label: "Poster do vídeo (URL)", kind: "url" },
+      { key: "hero.video_url", label: "Vídeo (desktop)", kind: "media", mediaKinds: ["video"], hint: "Selecione um vídeo da biblioteca ou deixe vazio para usar imagem." },
+      { key: "hero.video_url_mobile", label: "Vídeo (mobile, opcional)", kind: "media", mediaKinds: ["video"] },
+      { key: "hero.video_poster", label: "Poster / imagem de fundo", kind: "media", mediaKinds: ["image"], hint: "Aparece antes do vídeo carregar e como fallback." },
       { key: "hero.video_autoplay", label: "Autoplay (true / false)" },
       { key: "hero.video_loop", label: "Loop infinito (true / false)" },
     ],
