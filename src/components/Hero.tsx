@@ -29,6 +29,7 @@ export function Hero() {
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [muted, setMuted] = useState(true);
+  const [videoReady, setVideoReady] = useState(false);
   const [y, setY] = useState(0);
 
   useEffect(() => {
@@ -36,6 +37,9 @@ export function Hero() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Reset readiness when source changes
+  useEffect(() => setVideoReady(false), [videoSrc]);
 
   const toggleMute = () => {
     const v = videoRef.current;
@@ -45,6 +49,8 @@ export function Hero() {
     if (!v.muted) v.play().catch(() => undefined);
   };
 
+  const posterImg = poster || (typeof heroImg === "string" ? heroImg : undefined);
+
   return (
     <section className="relative h-[88svh] min-h-[600px] w-full overflow-hidden md:h-screen">
       <div
@@ -52,17 +58,34 @@ export function Hero() {
         style={{ transform: `translate3d(0, ${y * 0.4}px, 0)` }}
       >
         {hasVideo ? (
-          <video
-            ref={videoRef}
-            src={videoSrc}
-            poster={poster || (typeof heroImg === "string" ? heroImg : undefined)}
-            autoPlay={autoplay}
-            loop={loop}
-            muted
-            playsInline
-            preload="metadata"
-            className="h-full w-full object-cover"
-          />
+          <>
+            {/* Poster image como fallback / pré-carregamento. Some quando o vídeo começa. */}
+            {posterImg && (
+              <img
+                src={posterImg}
+                alt=""
+                aria-hidden="true"
+                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+                  videoReady ? "opacity-0" : "opacity-100"
+                }`}
+              />
+            )}
+            <video
+              ref={videoRef}
+              src={videoSrc}
+              poster={posterImg}
+              autoPlay={autoplay}
+              loop={loop}
+              muted
+              playsInline
+              preload="metadata"
+              onPlaying={() => setVideoReady(true)}
+              onLoadedData={() => setVideoReady(true)}
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
+                videoReady ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          </>
         ) : (
           <img
             src={heroImg}

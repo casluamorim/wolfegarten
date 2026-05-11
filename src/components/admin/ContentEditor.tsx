@@ -1,8 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteContent } from "@/hooks/use-site-content";
+import { MediaPicker } from "@/components/admin/MediaPicker";
+import type { MediaKind } from "@/hooks/use-media-library";
 
-type FieldKind = "text" | "textarea" | "url" | "datetime" | "tel";
+type FieldKind = "text" | "textarea" | "url" | "datetime" | "tel" | "media";
+
+export interface ContentField {
+  key: string;
+  label: string;
+  kind?: FieldKind;
+  hint?: string;
+  mediaKinds?: MediaKind[];
+}
 
 export interface ContentField {
   key: string;
@@ -46,9 +56,9 @@ export const SECTIONS: ContentSection[] = [
       { key: "hero.title_line2", label: "Título — linha 2 (destaque dourado)" },
       { key: "hero.subtitle", label: "Subtítulo (use Enter para nova linha)", kind: "textarea" },
       { key: "hero.cta", label: "Texto do botão" },
-      { key: "hero.video_url", label: "URL do Vídeo (desktop)", kind: "url", hint: "MP4/WebM. Deixe vazio para usar imagem." },
-      { key: "hero.video_url_mobile", label: "URL do Vídeo (mobile, opcional)", kind: "url" },
-      { key: "hero.video_poster", label: "Poster do vídeo (URL)", kind: "url" },
+      { key: "hero.video_url", label: "Vídeo (desktop)", kind: "media", mediaKinds: ["video"], hint: "Selecione um vídeo da biblioteca ou deixe vazio para usar imagem." },
+      { key: "hero.video_url_mobile", label: "Vídeo (mobile, opcional)", kind: "media", mediaKinds: ["video"] },
+      { key: "hero.video_poster", label: "Poster / imagem de fundo", kind: "media", mediaKinds: ["image"], hint: "Aparece antes do vídeo carregar e como fallback." },
       { key: "hero.video_autoplay", label: "Autoplay (true / false)" },
       { key: "hero.video_loop", label: "Loop infinito (true / false)" },
     ],
@@ -237,7 +247,11 @@ function FieldRow({ field, value }: { field: ContentField; value: string }) {
           {status === "error" && "erro"}
         </span>
       </div>
-      {kind === "textarea" ? (
+      {kind === "media" ? (
+        <div className="mt-2">
+          <MediaPicker value={val} onChange={onChange} kinds={field.mediaKinds ?? ["image", "video"]} />
+        </div>
+      ) : kind === "textarea" ? (
         <textarea
           value={val}
           onChange={(e) => onChange(e.target.value)}

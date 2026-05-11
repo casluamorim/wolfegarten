@@ -57,12 +57,24 @@ export function LogosPanel() {
         </p>
       </div>
 
-      <div className="mb-8 grid gap-4 rounded border border-border bg-card p-5 md:grid-cols-4">
-        <SmallNumber label="Colunas (desktop)" k="logos.cols_desktop" defaultV="3" current={setting} save={saveSetting} />
-        <SmallNumber label="Colunas (mobile)" k="logos.cols_mobile" defaultV="2" current={setting} save={saveSetting} />
-        <SmallNumber label="Altura (px)" k="logos.height" defaultV="40" current={setting} save={saveSetting} />
-        <SmallNumber label="Espaçamento (px)" k="logos.gap" defaultV="48" current={setting} save={saveSetting} />
-      </div>
+      {(["realizacao", "apoio"] as const).map((cat) => {
+        const defaults = cat === "realizacao"
+          ? { d: "3", m: "2", h: "48", g: "48" }
+          : { d: "4", m: "2", h: "36", g: "40" };
+        return (
+          <div key={cat} className="mb-6 rounded border border-border bg-card p-5">
+            <div className="mb-3 text-[10px] tracking-luxe text-gold">
+              LAYOUT — {cat === "realizacao" ? "REALIZAÇÃO" : "APOIO"}
+            </div>
+            <div className="grid gap-4 md:grid-cols-4">
+              <SmallNumber label="Colunas (desktop)" k={`logos.${cat}.cols_desktop`} defaultV={defaults.d} current={setting} save={saveSetting} />
+              <SmallNumber label="Colunas (mobile)" k={`logos.${cat}.cols_mobile`} defaultV={defaults.m} current={setting} save={saveSetting} />
+              <SmallNumber label="Altura (px)" k={`logos.${cat}.height`} defaultV={defaults.h} current={setting} save={saveSetting} />
+              <SmallNumber label="Espaçamento (px)" k={`logos.${cat}.gap`} defaultV={defaults.g} current={setting} save={saveSetting} />
+            </div>
+          </div>
+        );
+      })}
 
       {isLoading && <p className="text-sm text-muted-foreground">Carregando...</p>}
 
