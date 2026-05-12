@@ -9,11 +9,71 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VideosRouteImport } from './routes/videos'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as MasterplanRouteImport } from './routes/masterplan'
+import { Route as LocalizacaoRouteImport } from './routes/localizacao'
+import { Route as LazerRouteImport } from './routes/lazer'
+import { Route as InfraestruturaRouteImport } from './routes/infraestrutura'
+import { Route as GaleriaRouteImport } from './routes/galeria'
+import { Route as EmpreendimentoRouteImport } from './routes/empreendimento'
+import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminPreviewPageRouteImport } from './routes/admin.preview.$page'
 
+const VideosRoute = VideosRouteImport.update({
+  id: '/videos',
+  path: '/videos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MasterplanRoute = MasterplanRouteImport.update({
+  id: '/masterplan',
+  path: '/masterplan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocalizacaoRoute = LocalizacaoRouteImport.update({
+  id: '/localizacao',
+  path: '/localizacao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LazerRoute = LazerRouteImport.update({
+  id: '/lazer',
+  path: '/lazer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InfraestruturaRoute = InfraestruturaRouteImport.update({
+  id: '/infraestrutura',
+  path: '/infraestrutura',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GaleriaRoute = GaleriaRouteImport.update({
+  id: '/galeria',
+  path: '/galeria',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmpreendimentoRoute = EmpreendimentoRouteImport.update({
+  id: '/empreendimento',
+  path: '/empreendimento',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContatoRoute = ContatoRouteImport.update({
+  id: '/contato',
+  path: '/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +97,32 @@ const AdminPreviewPageRoute = AdminPreviewPageRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/contato': typeof ContatoRoute
+  '/empreendimento': typeof EmpreendimentoRoute
+  '/galeria': typeof GaleriaRoute
+  '/infraestrutura': typeof InfraestruturaRoute
+  '/lazer': typeof LazerRoute
+  '/localizacao': typeof LocalizacaoRoute
+  '/masterplan': typeof MasterplanRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/preview/$page': typeof AdminPreviewPageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/contato': typeof ContatoRoute
+  '/empreendimento': typeof EmpreendimentoRoute
+  '/galeria': typeof GaleriaRoute
+  '/infraestrutura': typeof InfraestruturaRoute
+  '/lazer': typeof LazerRoute
+  '/localizacao': typeof LocalizacaoRoute
+  '/masterplan': typeof MasterplanRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin': typeof AdminIndexRoute
   '/admin/preview/$page': typeof AdminPreviewPageRoute
@@ -50,20 +130,83 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/contato': typeof ContatoRoute
+  '/empreendimento': typeof EmpreendimentoRoute
+  '/galeria': typeof GaleriaRoute
+  '/infraestrutura': typeof InfraestruturaRoute
+  '/lazer': typeof LazerRoute
+  '/localizacao': typeof LocalizacaoRoute
+  '/masterplan': typeof MasterplanRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/preview/$page': typeof AdminPreviewPageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin/login' | '/admin/' | '/admin/preview/$page'
+  fullPaths:
+    | '/'
+    | '/contato'
+    | '/empreendimento'
+    | '/galeria'
+    | '/infraestrutura'
+    | '/lazer'
+    | '/localizacao'
+    | '/masterplan'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/videos'
+    | '/admin/login'
+    | '/admin/'
+    | '/admin/preview/$page'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin/login' | '/admin' | '/admin/preview/$page'
-  id: '__root__' | '/' | '/admin/login' | '/admin/' | '/admin/preview/$page'
+  to:
+    | '/'
+    | '/contato'
+    | '/empreendimento'
+    | '/galeria'
+    | '/infraestrutura'
+    | '/lazer'
+    | '/localizacao'
+    | '/masterplan'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/videos'
+    | '/admin/login'
+    | '/admin'
+    | '/admin/preview/$page'
+  id:
+    | '__root__'
+    | '/'
+    | '/contato'
+    | '/empreendimento'
+    | '/galeria'
+    | '/infraestrutura'
+    | '/lazer'
+    | '/localizacao'
+    | '/masterplan'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/videos'
+    | '/admin/login'
+    | '/admin/'
+    | '/admin/preview/$page'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ContatoRoute: typeof ContatoRoute
+  EmpreendimentoRoute: typeof EmpreendimentoRoute
+  GaleriaRoute: typeof GaleriaRoute
+  InfraestruturaRoute: typeof InfraestruturaRoute
+  LazerRoute: typeof LazerRoute
+  LocalizacaoRoute: typeof LocalizacaoRoute
+  MasterplanRoute: typeof MasterplanRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  VideosRoute: typeof VideosRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminPreviewPageRoute: typeof AdminPreviewPageRoute
@@ -71,6 +214,76 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/videos': {
+      id: '/videos'
+      path: '/videos'
+      fullPath: '/videos'
+      preLoaderRoute: typeof VideosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/masterplan': {
+      id: '/masterplan'
+      path: '/masterplan'
+      fullPath: '/masterplan'
+      preLoaderRoute: typeof MasterplanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/localizacao': {
+      id: '/localizacao'
+      path: '/localizacao'
+      fullPath: '/localizacao'
+      preLoaderRoute: typeof LocalizacaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lazer': {
+      id: '/lazer'
+      path: '/lazer'
+      fullPath: '/lazer'
+      preLoaderRoute: typeof LazerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/infraestrutura': {
+      id: '/infraestrutura'
+      path: '/infraestrutura'
+      fullPath: '/infraestrutura'
+      preLoaderRoute: typeof InfraestruturaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/galeria': {
+      id: '/galeria'
+      path: '/galeria'
+      fullPath: '/galeria'
+      preLoaderRoute: typeof GaleriaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/empreendimento': {
+      id: '/empreendimento'
+      path: '/empreendimento'
+      fullPath: '/empreendimento'
+      preLoaderRoute: typeof EmpreendimentoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contato': {
+      id: '/contato'
+      path: '/contato'
+      fullPath: '/contato'
+      preLoaderRoute: typeof ContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +317,16 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ContatoRoute: ContatoRoute,
+  EmpreendimentoRoute: EmpreendimentoRoute,
+  GaleriaRoute: GaleriaRoute,
+  InfraestruturaRoute: InfraestruturaRoute,
+  LazerRoute: LazerRoute,
+  LocalizacaoRoute: LocalizacaoRoute,
+  MasterplanRoute: MasterplanRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  VideosRoute: VideosRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminPreviewPageRoute: AdminPreviewPageRoute,

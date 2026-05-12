@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useSiteAsset } from "@/hooks/use-site-asset";
 import { useText } from "@/hooks/use-site-content";
+import { useLaunchPhase } from "@/hooks/use-launch-phase";
 
 export function Navbar() {
   const logo = useSiteAsset("logo-main");
-  const cta = useText("navbar.cta", "CONFIRMAR PRESENÇA");
+  const phase = useLaunchPhase();
+  const cta = useText(
+    phase === "live" ? "navbar.cta_live" : "navbar.cta",
+    phase === "live" ? "AGENDAR VISITA" : "CONFIRMAR PRESENÇA",
+  );
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
@@ -27,12 +33,21 @@ export function Navbar() {
         ) : (
           <div className="text-[11px] tracking-luxe text-offwhite">WOLFEGARTEN</div>
         )}
-        <a
-          href="#confirmar"
-          className="hidden text-[10px] tracking-wide-luxe text-muted-foreground transition-colors hover:text-gold md:block"
-        >
-          {cta}
-        </a>
+        {phase === "live" ? (
+          <div className="hidden items-center gap-6 md:flex">
+            <Link to="/empreendimento" className="text-[10px] tracking-luxe text-muted-foreground hover:text-gold">EMPREENDIMENTO</Link>
+            <Link to="/galeria" className="text-[10px] tracking-luxe text-muted-foreground hover:text-gold">GALERIA</Link>
+            <Link to="/videos" className="text-[10px] tracking-luxe text-muted-foreground hover:text-gold">VÍDEOS</Link>
+            <Link to="/contato" className="text-[10px] tracking-wide-luxe text-gold hover:text-offwhite">{cta}</Link>
+          </div>
+        ) : (
+          <a
+            href="#confirmar"
+            className="hidden text-[10px] tracking-wide-luxe text-muted-foreground transition-colors hover:text-gold md:block"
+          >
+            {cta}
+          </a>
+        )}
       </div>
     </nav>
   );
