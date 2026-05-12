@@ -10,6 +10,7 @@ import { Vagas } from "@/components/Vagas";
 import { Confirm } from "@/components/Confirm";
 import { Footer } from "@/components/Footer";
 import { useSiteContent } from "@/hooks/use-site-content";
+import { useLaunchPhase } from "@/hooks/use-launch-phase";
 import { useEffect } from "react";
 
 export const Route = createFileRoute("/")({
