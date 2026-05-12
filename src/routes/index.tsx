@@ -36,6 +36,21 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { data } = useSiteContent();
+  const phase = useLaunchPhase();
+
+  // Reforço de noindex enquanto pré-lançamento (robots.txt já bloqueia, mas alguns crawlers ignoram)
+  useEffect(() => {
+    const ensure = (name: string, content: string) => {
+      let el = document.querySelector<HTMLMetaElement>(`meta[name="${name}"]`);
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute("name", name);
+        document.head.appendChild(el);
+      }
+      el.setAttribute("content", content);
+    };
+    ensure("robots", phase === "live" ? "index, follow" : "noindex, nofollow");
+  }, [phase]);
 
   // Atualiza title/meta dinamicamente quando o CMS muda
   useEffect(() => {
