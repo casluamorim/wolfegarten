@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { useSiteAsset } from "@/hooks/use-site-asset";
 import { useText } from "@/hooks/use-site-content";
+import { useLaunchPhase } from "@/hooks/use-launch-phase";
 
 export function Navbar() {
   const logo = useSiteAsset("logo-main");
-  const cta = useText("navbar.cta", "CONFIRMAR PRESENÇA");
+  const phase = useLaunchPhase();
+  const cta = useText(
+    phase === "live" ? "navbar.cta_live" : "navbar.cta",
+    phase === "live" ? "AGENDAR VISITA" : "CONFIRMAR PRESENÇA",
+  );
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
