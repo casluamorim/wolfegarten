@@ -16,6 +16,7 @@ import { Route as LazerRouteImport } from './routes/lazer'
 import { Route as InfraestruturaRouteImport } from './routes/infraestrutura'
 import { Route as GaleriaRouteImport } from './routes/galeria'
 import { Route as EmpreendimentoRouteImport } from './routes/empreendimento'
+import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
@@ -56,6 +57,11 @@ const EmpreendimentoRoute = EmpreendimentoRouteImport.update({
   path: '/empreendimento',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContatoRoute = ContatoRouteImport.update({
+  id: '/contato',
+  path: '/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -79,6 +85,7 @@ const AdminPreviewPageRoute = AdminPreviewPageRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/contato': typeof ContatoRoute
   '/empreendimento': typeof EmpreendimentoRoute
   '/galeria': typeof GaleriaRoute
   '/infraestrutura': typeof InfraestruturaRoute
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/contato': typeof ContatoRoute
   '/empreendimento': typeof EmpreendimentoRoute
   '/galeria': typeof GaleriaRoute
   '/infraestrutura': typeof InfraestruturaRoute
@@ -106,6 +114,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/contato': typeof ContatoRoute
   '/empreendimento': typeof EmpreendimentoRoute
   '/galeria': typeof GaleriaRoute
   '/infraestrutura': typeof InfraestruturaRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/contato'
     | '/empreendimento'
     | '/galeria'
     | '/infraestrutura'
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/contato'
     | '/empreendimento'
     | '/galeria'
     | '/infraestrutura'
@@ -147,6 +158,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/contato'
     | '/empreendimento'
     | '/galeria'
     | '/infraestrutura'
@@ -161,6 +173,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ContatoRoute: typeof ContatoRoute
   EmpreendimentoRoute: typeof EmpreendimentoRoute
   GaleriaRoute: typeof GaleriaRoute
   InfraestruturaRoute: typeof InfraestruturaRoute
@@ -224,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EmpreendimentoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contato': {
+      id: '/contato'
+      path: '/contato'
+      fullPath: '/contato'
+      preLoaderRoute: typeof ContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -257,6 +277,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ContatoRoute: ContatoRoute,
   EmpreendimentoRoute: EmpreendimentoRoute,
   GaleriaRoute: GaleriaRoute,
   InfraestruturaRoute: InfraestruturaRoute,
