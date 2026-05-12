@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as InfraestruturaRouteImport } from './routes/infraestrutura'
 import { Route as EmpreendimentoRouteImport } from './routes/empreendimento'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminPreviewPageRouteImport } from './routes/admin.preview.$page'
 
+const InfraestruturaRoute = InfraestruturaRouteImport.update({
+  id: '/infraestrutura',
+  path: '/infraestrutura',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EmpreendimentoRoute = EmpreendimentoRouteImport.update({
   id: '/empreendimento',
   path: '/empreendimento',
@@ -44,6 +50,7 @@ const AdminPreviewPageRoute = AdminPreviewPageRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/empreendimento': typeof EmpreendimentoRoute
+  '/infraestrutura': typeof InfraestruturaRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/preview/$page': typeof AdminPreviewPageRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/empreendimento': typeof EmpreendimentoRoute
+  '/infraestrutura': typeof InfraestruturaRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin': typeof AdminIndexRoute
   '/admin/preview/$page': typeof AdminPreviewPageRoute
@@ -59,6 +67,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/empreendimento': typeof EmpreendimentoRoute
+  '/infraestrutura': typeof InfraestruturaRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/preview/$page': typeof AdminPreviewPageRoute
@@ -68,6 +77,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/empreendimento'
+    | '/infraestrutura'
     | '/admin/login'
     | '/admin/'
     | '/admin/preview/$page'
@@ -75,6 +85,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/empreendimento'
+    | '/infraestrutura'
     | '/admin/login'
     | '/admin'
     | '/admin/preview/$page'
@@ -82,6 +93,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/empreendimento'
+    | '/infraestrutura'
     | '/admin/login'
     | '/admin/'
     | '/admin/preview/$page'
@@ -90,6 +102,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EmpreendimentoRoute: typeof EmpreendimentoRoute
+  InfraestruturaRoute: typeof InfraestruturaRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminPreviewPageRoute: typeof AdminPreviewPageRoute
@@ -97,6 +110,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/infraestrutura': {
+      id: '/infraestrutura'
+      path: '/infraestrutura'
+      fullPath: '/infraestrutura'
+      preLoaderRoute: typeof InfraestruturaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/empreendimento': {
       id: '/empreendimento'
       path: '/empreendimento'
@@ -138,6 +158,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EmpreendimentoRoute: EmpreendimentoRoute,
+  InfraestruturaRoute: InfraestruturaRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminPreviewPageRoute: AdminPreviewPageRoute,
