@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VideosRouteImport } from './routes/videos'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as MasterplanRouteImport } from './routes/masterplan'
 import { Route as LocalizacaoRouteImport } from './routes/localizacao'
 import { Route as LazerRouteImport } from './routes/lazer'
@@ -25,6 +26,11 @@ import { Route as AdminPreviewPageRouteImport } from './routes/admin.preview.$pa
 const VideosRoute = VideosRouteImport.update({
   id: '/videos',
   path: '/videos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MasterplanRoute = MasterplanRouteImport.update({
@@ -92,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/lazer': typeof LazerRoute
   '/localizacao': typeof LocalizacaoRoute
   '/masterplan': typeof MasterplanRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
@@ -106,6 +113,7 @@ export interface FileRoutesByTo {
   '/lazer': typeof LazerRoute
   '/localizacao': typeof LocalizacaoRoute
   '/masterplan': typeof MasterplanRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin': typeof AdminIndexRoute
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   '/lazer': typeof LazerRoute
   '/localizacao': typeof LocalizacaoRoute
   '/masterplan': typeof MasterplanRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
@@ -137,6 +146,7 @@ export interface FileRouteTypes {
     | '/lazer'
     | '/localizacao'
     | '/masterplan'
+    | '/robots.txt'
     | '/videos'
     | '/admin/login'
     | '/admin/'
@@ -151,6 +161,7 @@ export interface FileRouteTypes {
     | '/lazer'
     | '/localizacao'
     | '/masterplan'
+    | '/robots.txt'
     | '/videos'
     | '/admin/login'
     | '/admin'
@@ -165,6 +176,7 @@ export interface FileRouteTypes {
     | '/lazer'
     | '/localizacao'
     | '/masterplan'
+    | '/robots.txt'
     | '/videos'
     | '/admin/login'
     | '/admin/'
@@ -180,6 +192,7 @@ export interface RootRouteChildren {
   LazerRoute: typeof LazerRoute
   LocalizacaoRoute: typeof LocalizacaoRoute
   MasterplanRoute: typeof MasterplanRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
   VideosRoute: typeof VideosRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -193,6 +206,13 @@ declare module '@tanstack/react-router' {
       path: '/videos'
       fullPath: '/videos'
       preLoaderRoute: typeof VideosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/masterplan': {
@@ -284,6 +304,7 @@ const rootRouteChildren: RootRouteChildren = {
   LazerRoute: LazerRoute,
   LocalizacaoRoute: LocalizacaoRoute,
   MasterplanRoute: MasterplanRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
   VideosRoute: VideosRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminIndexRoute: AdminIndexRoute,
@@ -292,3 +313,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
