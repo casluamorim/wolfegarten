@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VideosRouteImport } from './routes/videos'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as MasterplanRouteImport } from './routes/masterplan'
 import { Route as LocalizacaoRouteImport } from './routes/localizacao'
@@ -26,6 +27,11 @@ import { Route as AdminPreviewPageRouteImport } from './routes/admin.preview.$pa
 const VideosRoute = VideosRouteImport.update({
   id: '/videos',
   path: '/videos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/localizacao': typeof LocalizacaoRoute
   '/masterplan': typeof MasterplanRoute
   '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/localizacao': typeof LocalizacaoRoute
   '/masterplan': typeof MasterplanRoute
   '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin': typeof AdminIndexRoute
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/localizacao': typeof LocalizacaoRoute
   '/masterplan': typeof MasterplanRoute
   '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/localizacao'
     | '/masterplan'
     | '/robots.txt'
+    | '/sitemap.xml'
     | '/videos'
     | '/admin/login'
     | '/admin/'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/localizacao'
     | '/masterplan'
     | '/robots.txt'
+    | '/sitemap.xml'
     | '/videos'
     | '/admin/login'
     | '/admin'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/localizacao'
     | '/masterplan'
     | '/robots.txt'
+    | '/sitemap.xml'
     | '/videos'
     | '/admin/login'
     | '/admin/'
@@ -193,6 +205,7 @@ export interface RootRouteChildren {
   LocalizacaoRoute: typeof LocalizacaoRoute
   MasterplanRoute: typeof MasterplanRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VideosRoute: typeof VideosRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -206,6 +219,13 @@ declare module '@tanstack/react-router' {
       path: '/videos'
       fullPath: '/videos'
       preLoaderRoute: typeof VideosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/robots.txt': {
@@ -305,6 +325,7 @@ const rootRouteChildren: RootRouteChildren = {
   LocalizacaoRoute: LocalizacaoRoute,
   MasterplanRoute: MasterplanRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   VideosRoute: VideosRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminIndexRoute: AdminIndexRoute,
