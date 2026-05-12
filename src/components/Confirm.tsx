@@ -3,6 +3,7 @@ import { Reveal } from "./Reveal";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useText } from "@/hooks/use-site-content";
+import { useLaunchPhase } from "@/hooks/use-launch-phase";
 
 const schema = z.object({
   nome: z.string().trim().min(2, "Informe seu nome").max(100),
