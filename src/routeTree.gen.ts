@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as EmpreendimentoRouteImport } from './routes/empreendimento'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminPreviewPageRouteImport } from './routes/admin.preview.$page'
 
+const EmpreendimentoRoute = EmpreendimentoRouteImport.update({
+  id: '/empreendimento',
+  path: '/empreendimento',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +43,14 @@ const AdminPreviewPageRoute = AdminPreviewPageRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/empreendimento': typeof EmpreendimentoRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/preview/$page': typeof AdminPreviewPageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/empreendimento': typeof EmpreendimentoRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin': typeof AdminIndexRoute
   '/admin/preview/$page': typeof AdminPreviewPageRoute
@@ -50,20 +58,38 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/empreendimento': typeof EmpreendimentoRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/preview/$page': typeof AdminPreviewPageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin/login' | '/admin/' | '/admin/preview/$page'
+  fullPaths:
+    | '/'
+    | '/empreendimento'
+    | '/admin/login'
+    | '/admin/'
+    | '/admin/preview/$page'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin/login' | '/admin' | '/admin/preview/$page'
-  id: '__root__' | '/' | '/admin/login' | '/admin/' | '/admin/preview/$page'
+  to:
+    | '/'
+    | '/empreendimento'
+    | '/admin/login'
+    | '/admin'
+    | '/admin/preview/$page'
+  id:
+    | '__root__'
+    | '/'
+    | '/empreendimento'
+    | '/admin/login'
+    | '/admin/'
+    | '/admin/preview/$page'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  EmpreendimentoRoute: typeof EmpreendimentoRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminPreviewPageRoute: typeof AdminPreviewPageRoute
@@ -71,6 +97,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/empreendimento': {
+      id: '/empreendimento'
+      path: '/empreendimento'
+      fullPath: '/empreendimento'
+      preLoaderRoute: typeof EmpreendimentoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +137,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  EmpreendimentoRoute: EmpreendimentoRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminPreviewPageRoute: AdminPreviewPageRoute,
@@ -111,3 +145,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
