@@ -33,12 +33,21 @@ export function Navbar() {
         ) : (
           <div className="text-[11px] tracking-luxe text-offwhite">WOLFEGARTEN</div>
         )}
-        <a
-          href="#confirmar"
-          className="hidden text-[10px] tracking-wide-luxe text-muted-foreground transition-colors hover:text-gold md:block"
-        >
-          {cta}
-        </a>
+        {phase === "live" ? (
+          <div className="hidden items-center gap-6 md:flex">
+            <Link to="/empreendimento" className="text-[10px] tracking-luxe text-muted-foreground hover:text-gold">EMPREENDIMENTO</Link>
+            <Link to="/galeria" className="text-[10px] tracking-luxe text-muted-foreground hover:text-gold">GALERIA</Link>
+            <Link to="/videos" className="text-[10px] tracking-luxe text-muted-foreground hover:text-gold">VÍDEOS</Link>
+            <Link to="/contato" className="text-[10px] tracking-wide-luxe text-gold hover:text-offwhite">{cta}</Link>
+          </div>
+        ) : (
+          <a
+            href="#confirmar"
+            className="hidden text-[10px] tracking-wide-luxe text-muted-foreground transition-colors hover:text-gold md:block"
+          >
+            {cta}
+          </a>
+        )}
       </div>
     </nav>
   );
