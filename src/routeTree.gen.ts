@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MasterplanRouteImport } from './routes/masterplan'
 import { Route as LazerRouteImport } from './routes/lazer'
 import { Route as InfraestruturaRouteImport } from './routes/infraestrutura'
 import { Route as EmpreendimentoRouteImport } from './routes/empreendimento'
@@ -17,6 +18,11 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminPreviewPageRouteImport } from './routes/admin.preview.$page'
 
+const MasterplanRoute = MasterplanRouteImport.update({
+  id: '/masterplan',
+  path: '/masterplan',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LazerRoute = LazerRouteImport.update({
   id: '/lazer',
   path: '/lazer',
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/empreendimento': typeof EmpreendimentoRoute
   '/infraestrutura': typeof InfraestruturaRoute
   '/lazer': typeof LazerRoute
+  '/masterplan': typeof MasterplanRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/preview/$page': typeof AdminPreviewPageRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/empreendimento': typeof EmpreendimentoRoute
   '/infraestrutura': typeof InfraestruturaRoute
   '/lazer': typeof LazerRoute
+  '/masterplan': typeof MasterplanRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin': typeof AdminIndexRoute
   '/admin/preview/$page': typeof AdminPreviewPageRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/empreendimento': typeof EmpreendimentoRoute
   '/infraestrutura': typeof InfraestruturaRoute
   '/lazer': typeof LazerRoute
+  '/masterplan': typeof MasterplanRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/preview/$page': typeof AdminPreviewPageRoute
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/empreendimento'
     | '/infraestrutura'
     | '/lazer'
+    | '/masterplan'
     | '/admin/login'
     | '/admin/'
     | '/admin/preview/$page'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/empreendimento'
     | '/infraestrutura'
     | '/lazer'
+    | '/masterplan'
     | '/admin/login'
     | '/admin'
     | '/admin/preview/$page'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/empreendimento'
     | '/infraestrutura'
     | '/lazer'
+    | '/masterplan'
     | '/admin/login'
     | '/admin/'
     | '/admin/preview/$page'
@@ -116,6 +128,7 @@ export interface RootRouteChildren {
   EmpreendimentoRoute: typeof EmpreendimentoRoute
   InfraestruturaRoute: typeof InfraestruturaRoute
   LazerRoute: typeof LazerRoute
+  MasterplanRoute: typeof MasterplanRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminPreviewPageRoute: typeof AdminPreviewPageRoute
@@ -123,6 +136,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/masterplan': {
+      id: '/masterplan'
+      path: '/masterplan'
+      fullPath: '/masterplan'
+      preLoaderRoute: typeof MasterplanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lazer': {
       id: '/lazer'
       path: '/lazer'
@@ -180,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmpreendimentoRoute: EmpreendimentoRoute,
   InfraestruturaRoute: InfraestruturaRoute,
   LazerRoute: LazerRoute,
+  MasterplanRoute: MasterplanRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminPreviewPageRoute: AdminPreviewPageRoute,
