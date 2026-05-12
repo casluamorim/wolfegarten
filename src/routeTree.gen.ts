@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as MasterplanRouteImport } from './routes/masterplan'
 import { Route as LazerRouteImport } from './routes/lazer'
 import { Route as InfraestruturaRouteImport } from './routes/infraestrutura'
+import { Route as GaleriaRouteImport } from './routes/galeria'
 import { Route as EmpreendimentoRouteImport } from './routes/empreendimento'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -31,6 +32,11 @@ const LazerRoute = LazerRouteImport.update({
 const InfraestruturaRoute = InfraestruturaRouteImport.update({
   id: '/infraestrutura',
   path: '/infraestrutura',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GaleriaRoute = GaleriaRouteImport.update({
+  id: '/galeria',
+  path: '/galeria',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmpreendimentoRoute = EmpreendimentoRouteImport.update({
@@ -62,6 +68,7 @@ const AdminPreviewPageRoute = AdminPreviewPageRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/empreendimento': typeof EmpreendimentoRoute
+  '/galeria': typeof GaleriaRoute
   '/infraestrutura': typeof InfraestruturaRoute
   '/lazer': typeof LazerRoute
   '/masterplan': typeof MasterplanRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/empreendimento': typeof EmpreendimentoRoute
+  '/galeria': typeof GaleriaRoute
   '/infraestrutura': typeof InfraestruturaRoute
   '/lazer': typeof LazerRoute
   '/masterplan': typeof MasterplanRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/empreendimento': typeof EmpreendimentoRoute
+  '/galeria': typeof GaleriaRoute
   '/infraestrutura': typeof InfraestruturaRoute
   '/lazer': typeof LazerRoute
   '/masterplan': typeof MasterplanRoute
@@ -95,6 +104,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/empreendimento'
+    | '/galeria'
     | '/infraestrutura'
     | '/lazer'
     | '/masterplan'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/empreendimento'
+    | '/galeria'
     | '/infraestrutura'
     | '/lazer'
     | '/masterplan'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/empreendimento'
+    | '/galeria'
     | '/infraestrutura'
     | '/lazer'
     | '/masterplan'
@@ -126,6 +138,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EmpreendimentoRoute: typeof EmpreendimentoRoute
+  GaleriaRoute: typeof GaleriaRoute
   InfraestruturaRoute: typeof InfraestruturaRoute
   LazerRoute: typeof LazerRoute
   MasterplanRoute: typeof MasterplanRoute
@@ -155,6 +168,13 @@ declare module '@tanstack/react-router' {
       path: '/infraestrutura'
       fullPath: '/infraestrutura'
       preLoaderRoute: typeof InfraestruturaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/galeria': {
+      id: '/galeria'
+      path: '/galeria'
+      fullPath: '/galeria'
+      preLoaderRoute: typeof GaleriaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/empreendimento': {
@@ -198,6 +218,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EmpreendimentoRoute: EmpreendimentoRoute,
+  GaleriaRoute: GaleriaRoute,
   InfraestruturaRoute: InfraestruturaRoute,
   LazerRoute: LazerRoute,
   MasterplanRoute: MasterplanRoute,
