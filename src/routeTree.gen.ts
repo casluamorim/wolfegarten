@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VideosRouteImport } from './routes/videos'
 import { Route as MasterplanRouteImport } from './routes/masterplan'
+import { Route as LocalizacaoRouteImport } from './routes/localizacao'
 import { Route as LazerRouteImport } from './routes/lazer'
 import { Route as InfraestruturaRouteImport } from './routes/infraestrutura'
 import { Route as GaleriaRouteImport } from './routes/galeria'
@@ -28,6 +29,11 @@ const VideosRoute = VideosRouteImport.update({
 const MasterplanRoute = MasterplanRouteImport.update({
   id: '/masterplan',
   path: '/masterplan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LocalizacaoRoute = LocalizacaoRouteImport.update({
+  id: '/localizacao',
+  path: '/localizacao',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LazerRoute = LazerRouteImport.update({
@@ -77,6 +83,7 @@ export interface FileRoutesByFullPath {
   '/galeria': typeof GaleriaRoute
   '/infraestrutura': typeof InfraestruturaRoute
   '/lazer': typeof LazerRoute
+  '/localizacao': typeof LocalizacaoRoute
   '/masterplan': typeof MasterplanRoute
   '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/galeria': typeof GaleriaRoute
   '/infraestrutura': typeof InfraestruturaRoute
   '/lazer': typeof LazerRoute
+  '/localizacao': typeof LocalizacaoRoute
   '/masterplan': typeof MasterplanRoute
   '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/galeria': typeof GaleriaRoute
   '/infraestrutura': typeof InfraestruturaRoute
   '/lazer': typeof LazerRoute
+  '/localizacao': typeof LocalizacaoRoute
   '/masterplan': typeof MasterplanRoute
   '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
@@ -116,6 +125,7 @@ export interface FileRouteTypes {
     | '/galeria'
     | '/infraestrutura'
     | '/lazer'
+    | '/localizacao'
     | '/masterplan'
     | '/videos'
     | '/admin/login'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/galeria'
     | '/infraestrutura'
     | '/lazer'
+    | '/localizacao'
     | '/masterplan'
     | '/videos'
     | '/admin/login'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/galeria'
     | '/infraestrutura'
     | '/lazer'
+    | '/localizacao'
     | '/masterplan'
     | '/videos'
     | '/admin/login'
@@ -153,6 +165,7 @@ export interface RootRouteChildren {
   GaleriaRoute: typeof GaleriaRoute
   InfraestruturaRoute: typeof InfraestruturaRoute
   LazerRoute: typeof LazerRoute
+  LocalizacaoRoute: typeof LocalizacaoRoute
   MasterplanRoute: typeof MasterplanRoute
   VideosRoute: typeof VideosRoute
   AdminLoginRoute: typeof AdminLoginRoute
@@ -174,6 +187,13 @@ declare module '@tanstack/react-router' {
       path: '/masterplan'
       fullPath: '/masterplan'
       preLoaderRoute: typeof MasterplanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/localizacao': {
+      id: '/localizacao'
+      path: '/localizacao'
+      fullPath: '/localizacao'
+      preLoaderRoute: typeof LocalizacaoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lazer': {
@@ -241,6 +261,7 @@ const rootRouteChildren: RootRouteChildren = {
   GaleriaRoute: GaleriaRoute,
   InfraestruturaRoute: InfraestruturaRoute,
   LazerRoute: LazerRoute,
+  LocalizacaoRoute: LocalizacaoRoute,
   MasterplanRoute: MasterplanRoute,
   VideosRoute: VideosRoute,
   AdminLoginRoute: AdminLoginRoute,
