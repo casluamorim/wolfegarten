@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VideosRouteImport } from './routes/videos'
 import { Route as MasterplanRouteImport } from './routes/masterplan'
 import { Route as LazerRouteImport } from './routes/lazer'
 import { Route as InfraestruturaRouteImport } from './routes/infraestrutura'
@@ -19,6 +20,11 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminPreviewPageRouteImport } from './routes/admin.preview.$page'
 
+const VideosRoute = VideosRouteImport.update({
+  id: '/videos',
+  path: '/videos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MasterplanRoute = MasterplanRouteImport.update({
   id: '/masterplan',
   path: '/masterplan',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/infraestrutura': typeof InfraestruturaRoute
   '/lazer': typeof LazerRoute
   '/masterplan': typeof MasterplanRoute
+  '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/preview/$page': typeof AdminPreviewPageRoute
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/infraestrutura': typeof InfraestruturaRoute
   '/lazer': typeof LazerRoute
   '/masterplan': typeof MasterplanRoute
+  '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin': typeof AdminIndexRoute
   '/admin/preview/$page': typeof AdminPreviewPageRoute
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/infraestrutura': typeof InfraestruturaRoute
   '/lazer': typeof LazerRoute
   '/masterplan': typeof MasterplanRoute
+  '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/preview/$page': typeof AdminPreviewPageRoute
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/infraestrutura'
     | '/lazer'
     | '/masterplan'
+    | '/videos'
     | '/admin/login'
     | '/admin/'
     | '/admin/preview/$page'
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/infraestrutura'
     | '/lazer'
     | '/masterplan'
+    | '/videos'
     | '/admin/login'
     | '/admin'
     | '/admin/preview/$page'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/infraestrutura'
     | '/lazer'
     | '/masterplan'
+    | '/videos'
     | '/admin/login'
     | '/admin/'
     | '/admin/preview/$page'
@@ -142,6 +154,7 @@ export interface RootRouteChildren {
   InfraestruturaRoute: typeof InfraestruturaRoute
   LazerRoute: typeof LazerRoute
   MasterplanRoute: typeof MasterplanRoute
+  VideosRoute: typeof VideosRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminPreviewPageRoute: typeof AdminPreviewPageRoute
@@ -149,6 +162,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/videos': {
+      id: '/videos'
+      path: '/videos'
+      fullPath: '/videos'
+      preLoaderRoute: typeof VideosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/masterplan': {
       id: '/masterplan'
       path: '/masterplan'
@@ -222,6 +242,7 @@ const rootRouteChildren: RootRouteChildren = {
   InfraestruturaRoute: InfraestruturaRoute,
   LazerRoute: LazerRoute,
   MasterplanRoute: MasterplanRoute,
+  VideosRoute: VideosRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminPreviewPageRoute: AdminPreviewPageRoute,
