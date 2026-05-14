@@ -69,6 +69,10 @@ function Index() {
       setMeta('meta[property="og:description"]', data["seo.og_description"] as string);
   }, [data]);
 
+  if (phase === "live") {
+    return <HomePhase2 />;
+  }
+
   return (
     <>
       <LoadingScreen />
