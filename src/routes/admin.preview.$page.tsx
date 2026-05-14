@@ -1,28 +1,27 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { useText } from "@/hooks/use-site-content";
-import { Footer } from "@/components/Footer";
-import { useSiteAsset } from "@/hooks/use-site-asset";
-import heroFallback from "@/assets/hero-wolfegarten.jpg";
+import { useSiteContent } from "@/hooks/use-site-content";
+import { FieldRow, type ContentSection } from "@/components/admin/ContentEditor";
+import { PHASE2_SECTIONS } from "@/components/admin/phase2-sections";
 
 export const Route = createFileRoute("/admin/preview/$page")({
   component: PreviewPage,
   head: () => ({
-    meta: [{ title: "Preview Fase 2 · Admin" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "Editar Fase 2 · Admin" }, { name: "robots", content: "noindex" }],
   }),
 });
 
 const PAGES = [
-  { id: "home", label: "Home Institucional" },
-  { id: "empreendimento", label: "Empreendimento" },
-  { id: "infraestrutura", label: "Infraestrutura" },
-  { id: "lazer", label: "Áreas de Lazer" },
-  { id: "masterplan", label: "Masterplan" },
-  { id: "galeria", label: "Galeria" },
-  { id: "videos", label: "Vídeos" },
-  { id: "localizacao", label: "Localização" },
-  { id: "contato", label: "Contato" },
+  { id: "home", label: "Home Institucional", path: "/" },
+  { id: "empreendimento", label: "Empreendimento", path: "/empreendimento" },
+  { id: "infraestrutura", label: "Infraestrutura", path: "/infraestrutura" },
+  { id: "lazer", label: "Áreas de Lazer", path: "/lazer" },
+  { id: "masterplan", label: "Masterplan", path: "/masterplan" },
+  { id: "galeria", label: "Galeria", path: "/galeria" },
+  { id: "videos", label: "Vídeos", path: "/videos" },
+  { id: "localizacao", label: "Localização", path: "/localizacao" },
+  { id: "contato", label: "Contato", path: "/contato" },
 ];
 
 function PreviewPage() {
@@ -36,14 +35,20 @@ function PreviewPage() {
 
   if (loading || !session) return null;
 
+  const sections = PHASE2_SECTIONS[page] ?? [];
+  const pageMeta = PAGES.find((p) => p.id === page);
+  const previewPath = pageMeta?.path ?? "/";
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex min-h-screen flex-col bg-background">
       <header className="border-b border-gold/30 bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-3">
-          <div className="text-[10px] tracking-luxe text-gold">PREVIEW FASE 2 · INTERNO</div>
-          <Link to="/admin" className="text-[10px] tracking-luxe text-muted-foreground hover:text-gold">← VOLTAR AO ADMIN</Link>
+        <div className="mx-auto flex max-w-[1800px] items-center justify-between px-6 py-3">
+          <div className="text-[10px] tracking-luxe text-gold">EDITAR FASE 2 · INTERNO</div>
+          <Link to="/admin" className="text-[10px] tracking-luxe text-muted-foreground hover:text-gold">
+            ← VOLTAR AO ADMIN
+          </Link>
         </div>
-        <nav className="mx-auto flex max-w-[1600px] gap-4 overflow-x-auto px-6 pb-3">
+        <nav className="mx-auto flex max-w-[1800px] gap-4 overflow-x-auto px-6 pb-3">
           {PAGES.map((p) => (
             <Link
               key={p.id}
@@ -59,116 +64,86 @@ function PreviewPage() {
         </nav>
       </header>
 
-      <PreviewContent page={page} />
-      <Footer />
+      <div className="grid flex-1 grid-cols-1 lg:grid-cols-[480px_minmax(0,1fr)]">
+        <aside className="overflow-y-auto border-r border-border bg-background p-6 lg:max-h-[calc(100vh-92px)]">
+          <h2 className="font-serif text-2xl text-offwhite">{pageMeta?.label ?? page}</h2>
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            Edição completa da Fase 2. Mudanças aparecem no preview ao lado em tempo real.
+            Nada disto fica visível publicamente até a ativação oficial.
+          </p>
+          <div className="mt-6">
+            <SectionList sections={sections} />
+          </div>
+        </aside>
+
+        <section className="bg-card/30">
+          <div className="flex items-center justify-between border-b border-border px-4 py-2">
+            <span className="text-[10px] tracking-luxe text-muted-foreground">PREVIEW · FASE 2 (modo simulação)</span>
+            <a
+              href={`${previewPath}?simulate=live`}
+              target="_blank"
+              rel="noreferrer"
+              className="text-[10px] tracking-luxe text-gold hover:text-offwhite"
+            >
+              ABRIR EM NOVA ABA ↗
+            </a>
+          </div>
+          <iframe
+            key={page}
+            src={`${previewPath}?simulate=live`}
+            title={`Preview ${page}`}
+            className="h-[calc(100vh-128px)] w-full border-0 bg-background"
+          />
+        </section>
+      </div>
     </div>
   );
 }
 
-function PreviewContent({ page }: { page: string }) {
-  switch (page) {
-    case "home":
-      return <Phase2Home />;
-    case "empreendimento":
-      return <SimpleSection sectionKey="empreendimento" />;
-    case "infraestrutura":
-      return <SimpleSection sectionKey="infraestrutura" />;
-    case "lazer":
-      return <SimpleSection sectionKey="lazer" />;
-    case "masterplan":
-      return <SimpleSection sectionKey="masterplan" />;
-    case "galeria":
-      return <Phase2Gallery />;
-    case "videos":
-      return <Phase2Videos />;
-    case "localizacao":
-      return <SimpleSection sectionKey="localizacao" />;
-    case "contato":
-      return <Phase2Contato />;
-    default:
-      return (
-        <div className="flex min-h-[60vh] items-center justify-center">
-          <p className="text-sm text-muted-foreground">Página não encontrada.</p>
+function SectionList({ sections }: { sections: ContentSection[] }) {
+  const { data, isLoading } = useSiteContent();
+  const [openId, setOpenId] = useState<string>(sections[0]?.id ?? "");
+
+  // reset open when sections change (page navigation)
+  const firstId = sections[0]?.id ?? "";
+  const ids = useMemo(() => sections.map((s) => s.id).join(","), [sections]);
+  useEffect(() => {
+    setOpenId(firstId);
+  }, [ids, firstId]);
+
+  if (isLoading) return <p className="text-sm text-muted-foreground">Carregando...</p>;
+  if (!sections.length)
+    return <p className="text-sm text-muted-foreground">Sem campos editáveis para esta página.</p>;
+
+  return (
+    <div className="space-y-3">
+      {sections.map((s) => (
+        <div key={s.id} className="overflow-hidden rounded border border-border">
+          <button
+            onClick={() => setOpenId(openId === s.id ? "" : s.id)}
+            className="flex w-full items-center justify-between bg-card px-4 py-3 text-left transition-colors hover:bg-card/70"
+          >
+            <div>
+              <div className="text-sm text-offwhite">{s.title}</div>
+              {s.description && (
+                <div className="mt-1 text-[11px] text-muted-foreground">{s.description}</div>
+              )}
+            </div>
+            <span className="text-gold">{openId === s.id ? "−" : "+"}</span>
+          </button>
+          {openId === s.id && (
+            <div className="space-y-5 border-t border-border bg-background/50 p-4">
+              {s.fields.map((f) => (
+                <FieldRow
+                  key={f.key}
+                  field={f}
+                  value={typeof data?.[f.key] === "string" ? (data[f.key] as string) : ""}
+                />
+              ))}
+            </div>
+          )}
         </div>
-      );
-  }
-}
-
-function Phase2Home() {
-  const t1 = useText("phase2.hero.title_line1", "Wölfegarten");
-  const t2 = useText("phase2.hero.title_line2", "Indaial");
-  const sub = useText("phase2.hero.subtitle", "Um novo padrão de viver.");
-  const cta = useText("phase2.hero.cta", "Agendar uma Visita");
-  const img = useSiteAsset("hero", heroFallback);
-
-  return (
-    <section className="relative h-[80vh] min-h-[500px] overflow-hidden">
-      <img src={img} alt="" className="absolute inset-0 h-full w-full object-cover" />
-      <div className="absolute inset-0 bg-background/70" />
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
-        <h1 className="font-serif text-5xl font-light text-offwhite md:text-7xl">
-          {t1}
-          <br />
-          <span className="text-gold">{t2}</span>
-        </h1>
-        <p className="mt-6 max-w-md text-sm text-offwhite/80">{sub}</p>
-        <a href="#contato" className="btn-luxe mt-10">{cta}</a>
-      </div>
-    </section>
-  );
-}
-
-function SimpleSection({ sectionKey }: { sectionKey: string }) {
-  const title = useText(`phase2.${sectionKey}.title`, sectionKey);
-  const text = useText(`phase2.${sectionKey}.text`, "Edite no painel admin → Editar Site (chaves phase2.*)");
-  return (
-    <section className="mx-auto max-w-4xl px-6 py-24 text-center">
-      <h2 className="font-serif text-4xl text-offwhite">{title}</h2>
-      <div className="mx-auto my-8 h-px w-16 bg-gold" />
-      <p className="text-base text-offwhite/80">{text}</p>
-    </section>
-  );
-}
-
-function Phase2Gallery() {
-  return (
-    <section className="mx-auto max-w-6xl px-6 py-24">
-      <h2 className="font-serif text-4xl text-offwhite text-center">Galeria</h2>
-      <div className="mx-auto my-8 h-px w-16 bg-gold" />
-      <p className="text-center text-sm text-muted-foreground">
-        Preencha imagens e renders na biblioteca de mídia. A galeria será conectada ao painel.
-      </p>
-      <div className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-3">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="aspect-square rounded border border-dashed border-border bg-card" />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Phase2Videos() {
-  return (
-    <section className="mx-auto max-w-5xl px-6 py-24">
-      <h2 className="font-serif text-4xl text-offwhite text-center">Vídeos</h2>
-      <div className="mx-auto my-8 h-px w-16 bg-gold" />
-      <div className="aspect-video rounded border border-dashed border-border bg-card" />
-    </section>
-  );
-}
-
-function Phase2Contato() {
-  const title = useText("phase2.contato.title", "Agende sua Visita");
-  const sub = useText("phase2.contato.subtitle", "Nossa equipe está pronta.");
-  const cta = useText("phase2.confirm.cta", "Agendar uma Visita");
-  return (
-    <section id="contato" className="mx-auto max-w-2xl px-6 py-24 text-center">
-      <h2 className="font-serif text-4xl text-offwhite">{title}</h2>
-      <p className="mt-4 text-sm text-muted-foreground">{sub}</p>
-      <button className="btn-luxe mt-10">{cta}</button>
-      <p className="mt-12 text-[10px] tracking-luxe text-muted-foreground">
-        FORMULÁRIO COMPLETO INTEGRADO À TABELA DE LEADS APÓS LANÇAMENTO
-      </p>
-    </section>
+      ))}
+    </div>
   );
 }

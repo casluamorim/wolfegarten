@@ -12,6 +12,7 @@ import { Footer } from "@/components/Footer";
 import { useSiteContent } from "@/hooks/use-site-content";
 import { useLaunchPhase } from "@/hooks/use-launch-phase";
 import { useEffect } from "react";
+import { HomePhase2 } from "@/components/phase2/HomePhase2";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -68,6 +69,10 @@ function Index() {
     if (typeof data["seo.og_description"] === "string")
       setMeta('meta[property="og:description"]', data["seo.og_description"] as string);
   }, [data]);
+
+  if (phase === "live") {
+    return <HomePhase2 />;
+  }
 
   return (
     <>
