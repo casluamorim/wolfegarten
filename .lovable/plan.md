@@ -1,98 +1,95 @@
-# Plano — Player progressivo, Galeria/Vídeos, troca de fase e SEO
+# Plano — Fase 2 Editável, Home Premium e Menu Refinado
 
-Tudo continua sem quebrar o site público atual. Mudanças visíveis ao público são apenas o player do Hero (sem flicker) e a chave automática de fase quando a data chegar. Galeria/Vídeos novos ficam preparados mas só aparecem quando o admin ativar.
+## 1. Editor completo da Fase 2 no painel admin
 
----
+Hoje `admin.preview.$page.tsx` só renderiza. Vou transformar a aba **Preview / Fase 2** em editor real, espelhando o `ContentEditor` do site público.
 
-## 1. Player progressivo e sem flicker (`src/components/Hero.tsx` + novo `src/components/SmartVideo.tsx`)
+- Refatorar `src/routes/admin.preview.$page.tsx` em layout split:
+  - **Esquerda**: árvore de seções da página (Hero, Conceito, Vídeo, Renders, Galeria, Diferenciais, Infraestrutura, Lazer, Localização, Masterplan, CTA, Contato, SEO).
+  - **Direita**: preview ao vivo da página Fase 2 renderizado pelos mesmos componentes públicos, lendo do `site_content` com prefixo `phase2.<page>.<section>.*`.
+- Cada seção edita: textos, títulos, subtítulos, descrições, botões/CTA, **tipo de mídia** (imagem|vídeo) + `MediaPicker`, background, ordem.
+- Aba dedicada de **SEO** por página (`phase2.<page>.seo.title|description|og_image|og_type`).
+- Aba **Menu** edita itens primários e secundários (`phase2.menu.primary[]`, `phase2.menu.secondary[]`).
+- Aba **Formulário de contato** edita campos visíveis e textos.
+- Toda escrita usa `site_content` (já existe RLS admin). Nada novo no schema.
 
-Criar `<SmartVideo />` reutilizável com:
+**Isolamento público**: o `useLaunchPhase` já controla `pre-launch | live`. Vou garantir que:
+- Rotas Fase 2 (`/empreendimento`, `/galeria`, etc.) só montam quando `phase === "live"`; em `pre-launch` redirecionam para `/`.
+- `robots.txt` e `sitemap.xml` continuam bloqueando Fase 2 em `pre-launch` (já implementado, só revisar).
+- Editor admin força `?simulate=live` internamente para o iframe de preview, sem afetar produção.
 
-- `preload="metadata"` por padrão, `preload="auto"` apenas quando `IntersectionObserver` confirma que o vídeo está visível e a conexão é boa (`navigator.connection.effectiveType` ∈ {`4g`}, sem `saveData`).
-- Em conexões `2g/3g/saveData`: NÃO carrega o vídeo, mantém só o poster (imagem). Mostra botão "Reproduzir vídeo" se quiser tocar manualmente.
-- Source list ordenada: `webm` (se houver), depois `mp4_720`, depois `mp4_1080`, depois fallback `video_url`. Usa `<source>` múltiplos para o navegador escolher.
-- Troca poster→vídeo via crossfade (já parcialmente feito): só remove o poster após `onCanPlay` (não `onLoadedData`) + 1 RAF, evita "piscar" no Safari.
-- `onError` em qualquer source → mantém poster permanentemente (fallback gracioso, sem tela preta).
-- Respeita `prefers-reduced-motion`: não autoplay, mostra controles.
+## 2. Home da Fase 2 — landing premium
 
-Hero passa a usar `<SmartVideo />`. Mesma API: `videoSrc`, `poster`, `mobileSrc`, `variants`.
-
-## 2. Galeria e Vídeos da Fase 2 (preparação, sem quebrar o atual)
-
-Novos componentes (usados apenas nas rotas `/admin/preview/*` por enquanto):
-
-- `src/components/phase2/GalleryGrid.tsx` — masonry responsivo lendo `media_library` filtrado por `tag = 'galeria'`. Lazy-load com `loading="lazy"` + `decoding="async"`. Lightbox simples (sem dependência nova: dialog do shadcn já existe).
-- `src/components/phase2/VideoGallery.tsx` — grid de cards de vídeo, cada card usa `<SmartVideo />` em modo "click-to-play" (poster + ícone play; só carrega ao clicar). Thumb = `poster_path` da `media_library` (gerado automaticamente no upload via `video-poster.ts`, já implementado).
-
-Regras de reprodução:
-- Apenas 1 vídeo toca por vez (gerencia via contexto leve `VideoPlaybackContext`).
-- Pausa automática ao sair do viewport.
-- Mute por padrão; botão de som por card.
-
-Painel: `MediaLibrary.tsx` ganha campo `tags` editável (já existe na schema). Admin marca vídeos/imagens como `galeria`, `videos`, `infraestrutura`, etc.
-
-## 3. Troca automática Fase 1 → Fase 2
-
-Hoje `launch.phase` é um texto manual. Adicionar lógica determinística em runtime:
-
-- Hook novo `src/hooks/use-launch-phase.ts`:
-  ```
-  effectivePhase = 
-    launch.auto_switch === 'true' && now >= launch.target_date ? 'live'
-    : launch.phase ?? 'pre-launch'
-  ```
-  Recalcula a cada minuto via `setInterval` (sem reload).
-- `Confirm.tsx`, `Navbar.tsx`, `Hero.tsx`, `Footer.tsx` consomem `useLaunchPhase()`:
-  - `pre-launch` → comportamento atual (Confirmar Presença)
-  - `live` → CTA "Agendar uma Visita", textos de `phase2.*`, links de menu para `/empreendimento`, `/galeria`, etc.
-- `SimulationPanel.tsx` ganha botão "Simular agora como Fase 2" para o admin pré-visualizar (apenas via query string `?simulate=live`, não persiste).
-
-Quando `effectivePhase === 'live'`, as rotas `/admin/preview/*` passam a ser promovidas para rotas públicas espelho (`/empreendimento`, `/galeria`, etc.) — criar essas rotas reais agora, mas com guard: se `phase !== 'live'`, redirecionar para `/`.
-
-## 4. SEO por página + sitemap + robots
-
-Cada rota da Fase 2 (`/empreendimento`, `/infraestrutura`, `/lazer`, `/masterplan`, `/galeria`, `/videos`, `/localizacao`, `/contato`) com `head()` próprio lendo de `site_content`:
+Criar `src/components/phase2/HomePhase2.tsx` que substitui o conteúdo da rota `/` quando `phase === "live"`. Estrutura:
 
 ```
-phase2.{page}.seo_title
-phase2.{page}.seo_description
-phase2.{page}.og_image
+1. HeroPhase2          imagem premium + overlay + tipografia + CTA (SEM vídeo)
+2. VideoIntro          vídeo institucional cinematográfico (SmartVideo)
+3. Conceito            texto + mídia flexível (img|vídeo)
+4. Diferenciais        grid 3-4 cards com ícones
+5. RendersGrid         galeria 3D (bento/masonry)
+6. Infraestrutura      seção visual + mídia
+7. Lazer               carrossel premium
+8. Masterplan          imagem grande zoomável + legenda
+9. Localizacao         mapa + destaques
+10. GaleriaPreview     grid + link "ver galeria completa"
+11. CTAVisita          bloco escuro fullbleed + botão "Agendar visita"
+12. ContatoCompacto    formulário curto (nome, email, telefone, msg)
 ```
 
-- `<title>`, `meta description`, `og:title`, `og:description`, `og:image`, `twitter:card=summary_large_image`, `twitter:image`.
-- Hero/cover de cada página alimenta automaticamente `og:image` quando `og_image` estiver vazio.
+Cada bloco lê de `phase2.home.<section>.*` no `site_content`. Componentes reutilizáveis em `src/components/phase2/blocks/`.
 
-**robots.txt dinâmico** (`src/routes/robots[.]txt.tsx`):
-- Se `effectivePhase !== 'live'`: `User-agent: *\nDisallow: /` (bloqueia indexação total do pré-lançamento).
-- Se `live`: `Allow: /` + referência ao sitemap.
+## 3. Hero sem vídeo
 
-**sitemap.xml dinâmico** (`src/routes/sitemap[.]xml.tsx`):
-- Se `pre-launch`: apenas `/`.
-- Se `live`: `/` + todas as páginas Fase 2 com `lastmod` lido de `site_content.updated_at`.
+Editar `Hero.tsx` (Fase 1 atual continua igual) e novo `HeroPhase2.tsx`:
+- Apenas `<img>` premium com `loading="eager"` + `fetchpriority="high"`.
+- Overlay duplo (gradient + radial) já existente.
+- Tipografia serif cinematográfica.
+- CTA único elegante.
+- Sem `<video>`, sem `SmartVideo`, sem toggle de som.
+- Vídeo migra para a seção `VideoIntro` logo abaixo (autoplay muted + botão som, usando `SmartVideo` já existente).
 
-Root route: meta `robots` adicional via `head()` lendo `site_content` (como reforço caso bots ignorem robots.txt no preview).
+## 4. Mídia flexível em qualquer seção
 
-## Arquivos
+Criar componente `<FlexibleMedia phase2Key="phase2.home.conceito" />`:
+- Lê `<key>.media_type` (`"image" | "video"`).
+- Se `image`: lê `<key>.image_url` + alt.
+- Se `video`: lê `<key>.video_url`, `video_poster`, `video_autoplay`, `video_loop` e usa `SmartVideo`.
+- Editor admin mostra select "Tipo de mídia" + `MediaPicker` filtrado pelo tipo.
 
-**Novos:**
-- `src/components/SmartVideo.tsx`
-- `src/components/phase2/GalleryGrid.tsx`
-- `src/components/phase2/VideoGallery.tsx`
-- `src/components/phase2/VideoPlaybackContext.tsx`
-- `src/hooks/use-launch-phase.ts`
-- `src/routes/robots[.]txt.tsx`
-- `src/routes/sitemap[.]xml.tsx`
-- `src/routes/empreendimento.tsx`, `infraestrutura.tsx`, `lazer.tsx`, `masterplan.tsx`, `galeria.tsx`, `videos.tsx`, `localizacao.tsx`, `contato.tsx` (com guard de fase)
+Aplicado em: Conceito, Diferenciais (background), Infraestrutura, Lazer, Masterplan, Localização, CTA, e qualquer bloco futuro.
 
-**Editar:**
-- `src/components/Hero.tsx` (usa SmartVideo)
-- `src/components/Navbar.tsx`, `Confirm.tsx`, `Footer.tsx` (usam useLaunchPhase)
-- `src/components/admin/SimulationPanel.tsx` (botão simular Fase 2)
-- `src/routes/__root.tsx` (meta robots dinâmica)
-- `src/routes/admin.preview.$page.tsx` (passa a renderizar os mesmos componentes das rotas públicas)
+## 5. Menu superior minimalista + overlay premium
+
+Editar `Navbar.tsx`:
+- Desktop visível: **Home, Empreendimento, Infraestrutura, Contato** + ícone "Menu" (hamburger fino dourado).
+- Mobile: logo + ícone Menu (sem itens visíveis).
+- CTA "Agendar Visita" continua como botão dourado discreto à direita.
+
+Criar `src/components/phase2/MenuOverlay.tsx`:
+- Overlay fullscreen, fundo escuro com blur, fade + slide-in.
+- Lista vertical de **todos** os links (primários + secundários: Áreas de Lazer, Masterplan, Galeria, Vídeos, Localização, Experiência, Diferenciais) em tipografia grande serif.
+- Botão fechar (X) no topo direito.
+- Footer com redes sociais e contato.
+- `prefers-reduced-motion` respeitado.
+- Bloqueia scroll do body enquanto aberto.
+
+Itens vêm de `phase2.menu.primary[]` e `phase2.menu.secondary[]` (editáveis no admin), com defaults sensatos.
+
+## 6. Seed de conteúdo Fase 2
+
+Migration leve: inserir defaults `phase2.home.*`, `phase2.menu.*`, `phase2.<page>.seo.*` em `site_content` via `INSERT ... ON CONFLICT DO NOTHING`. Sem mudança de schema.
+
+## Detalhes técnicos
+
+- Sem mudança em `media_library`, `partner_logos`, `site_assets`.
+- Reusa: `SmartVideo`, `MediaPicker`, `MediaLibrary`, `useSiteContent`, `useLaunchPhase`, `Phase2Page`.
+- Rotas Fase 2 existentes (`/empreendimento`, `/galeria`, etc.) ganham guard: `if (phase !== "live") redirect("/")`.
+- `index.tsx` passa a renderizar `<HomePhase1 />` ou `<HomePhase2 />` via `useLaunchPhase()`.
+- SEO por página continua via `head()` do TanStack, lendo defaults do `site_content` quando o admin sobrescrever.
 
 ## Fora de escopo
-- Transcoding real multi-bitrate (HLS) — continua exigindo Cloudflare Stream/mux. SmartVideo já está pronto pra isso quando integrar.
-- CDN customizada — Lovable Storage já entrega via CDN.
 
-Posso seguir?
+- Transcoding HLS multi-bitrate real (Lovable Storage entrega via CDN; player já é adaptativo).
+- Drag-and-drop de reordenação de **seções** dentro do editor (reordenação fica em itens de menu/galeria onde já existe).
+- Mapa interativo real em Localização (placeholder com imagem + endereço, hook para Google Maps fica para depois).
