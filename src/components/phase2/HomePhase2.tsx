@@ -59,8 +59,7 @@ function HeroSection() {
         alt="Empreendimento Wölfegarten"
         className="absolute inset-0 h-full w-full object-cover animate-kenburns"
         loading="eager"
-        // @ts-expect-error fetchpriority is valid HTML5
-        fetchpriority="high"
+        fetchPriority="high"
       />
       <div className="absolute inset-0 pointer-events-none" style={{ background: "var(--gradient-hero)" }} />
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_50%_30%,oklch(0.18_0.025_155/0.2),oklch(0.1_0.02_155/0.95))]" />
