@@ -149,10 +149,20 @@ function ConceitoSection() {
 function DiferenciaisSection() {
   const eyebrow = useText("phase2.home.diferenciais.eyebrow", "DIFERENCIAIS");
   const title = useText("phase2.home.diferenciais.title", "");
-  const items = [1, 2, 3, 4].map((n) => ({
-    title: useText(`phase2.home.diferenciais.item${n}_title`, ""),
-    text: useText(`phase2.home.diferenciais.item${n}_text`, ""),
-  }));
+  const i1t = useText("phase2.home.diferenciais.item1_title", "");
+  const i1x = useText("phase2.home.diferenciais.item1_text", "");
+  const i2t = useText("phase2.home.diferenciais.item2_title", "");
+  const i2x = useText("phase2.home.diferenciais.item2_text", "");
+  const i3t = useText("phase2.home.diferenciais.item3_title", "");
+  const i3x = useText("phase2.home.diferenciais.item3_text", "");
+  const i4t = useText("phase2.home.diferenciais.item4_title", "");
+  const i4x = useText("phase2.home.diferenciais.item4_text", "");
+  const items = [
+    { title: i1t, text: i1x },
+    { title: i2t, text: i2x },
+    { title: i3t, text: i3x },
+    { title: i4t, text: i4x },
+  ];
 
   return (
     <section className="bg-background py-20 md:py-28">
