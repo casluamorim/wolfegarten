@@ -201,7 +201,7 @@ export function ContentEditor() {
   );
 }
 
-function FieldRow({ field, value }: { field: ContentField; value: string }) {
+export function FieldRow({ field, value }: { field: ContentField; value: string }) {
   const [val, setVal] = useState(value);
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const timer = useRef<number | null>(null);
