@@ -19,7 +19,7 @@ export const Route = createFileRoute("/admin/")({
   }),
 });
 
-type Tab = "editar" | "midia" | "logos" | "config" | "leads" | "preview";
+type Tab = "editar" | "midia" | "logos" | "config" | "leads";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "editar", label: "EDITAR SITE" },
@@ -27,7 +27,6 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "logos", label: "LOGOS" },
   { id: "config", label: "CONFIGURAÇÕES" },
   { id: "leads", label: "LEADS" },
-  { id: "preview", label: "PREVIEW & SIMULAÇÃO" },
 ];
 
 // Tudo que não é logo categorizada continua na aba Mídia.
@@ -85,13 +84,6 @@ function AdminPage() {
             WÖLFEGARTEN · ADMIN
           </Link>
           <div className="flex items-center gap-4">
-            <Link
-              to="/admin/preview/$page"
-              params={{ page: "home" }}
-              className="rounded border border-gold/40 px-3 py-1 text-[10px] tracking-luxe text-gold hover:bg-gold/10"
-            >
-              PREVIEW FASE 2
-            </Link>
             <span className="hidden text-[10px] text-muted-foreground md:inline">{session.user.email}</span>
             <button
               onClick={() => supabase.auth.signOut().then(() => navigate({ to: "/admin/login" }))}
@@ -140,7 +132,6 @@ function AdminPage() {
             {tab === "logos" && <LogosPanel />}
             {tab === "config" && <SettingsPanel />}
             {tab === "leads" && <LeadsPanel />}
-            {tab === "preview" && <SimulationPanel />}
           </div>
           {showPreview && <LivePreview />}
         </div>
