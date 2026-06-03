@@ -3,7 +3,6 @@ import { Reveal } from "./Reveal";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useText } from "@/hooks/use-site-content";
-import { useLaunchPhase } from "@/hooks/use-launch-phase";
 
 const schema = z.object({
   nome: z.string().trim().min(2, "Informe seu nome").max(100),
@@ -16,12 +15,10 @@ const schema = z.object({
 const ORIGENS = ["Instagram", "Indicação", "WhatsApp", "Corretor", "Outro"];
 
 export function Confirm() {
-  const phase = useLaunchPhase();
-  const live = phase === "live";
-  const eyebrow = useText(live ? "phase2.confirm.eyebrow" : "confirm.eyebrow", live ? "VISITA" : "CONFIRMAÇÃO");
-  const title = useText(live ? "phase2.confirm.title" : "confirm.title", live ? "Agende sua Visita" : "Confirmar Presença");
-  const subtitle = useText(live ? "phase2.confirm.subtitle" : "confirm.subtitle", live ? "Conheça pessoalmente o Wölfegarten." : "Reserve seu lugar neste encontro exclusivo.");
-  const ctaLabel = useText(live ? "phase2.confirm.cta" : "confirm.cta", live ? "Agendar uma Visita" : "Confirmar via WhatsApp");
+  const eyebrow = useText("confirm.eyebrow", "VISITA");
+  const title = useText("confirm.title", "Agende sua Visita");
+  const subtitle = useText("confirm.subtitle", "Conheça pessoalmente o Wölfegarten.");
+  const ctaLabel = useText("confirm.cta", "Agendar via WhatsApp");
   const contactName = useText("confirm.contact_name", "SHIRLEI LISSONI");
   const contactPhone = useText("confirm.contact_phone_display", "(47) 98817-8508");
   const whatsapp = useText("contact.whatsapp", "5547988178508");
@@ -52,7 +49,7 @@ export function Confirm() {
       return;
     }
     const msg =
-      `*Nova confirmação — Experiência Wölfegarten*%0A%0A` +
+      `*Novo agendamento de visita — Wölfegarten*%0A%0A` +
       `*Nome:* ${encodeURIComponent(r.data.nome)}%0A` +
       `*Telefone:* ${encodeURIComponent(r.data.telefone)}%0A` +
       `*E-mail:* ${encodeURIComponent(r.data.email)}%0A` +

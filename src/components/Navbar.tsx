@@ -3,16 +3,11 @@ import { Link } from "@tanstack/react-router";
 import { Menu } from "lucide-react";
 import { useSiteAsset } from "@/hooks/use-site-asset";
 import { useText } from "@/hooks/use-site-content";
-import { useLaunchPhase } from "@/hooks/use-launch-phase";
 import { MenuOverlay } from "@/components/phase2/MenuOverlay";
 
 export function Navbar() {
   const logo = useSiteAsset("logo-main");
-  const phase = useLaunchPhase();
-  const cta = useText(
-    phase === "live" ? "navbar.cta_live" : "navbar.cta",
-    phase === "live" ? "AGENDAR VISITA" : "CONFIRMAR PRESENÇA",
-  );
+  const cta = useText("navbar.cta", "AGENDAR VISITA");
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -21,8 +16,6 @@ export function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  const isLive = phase === "live";
 
   return (
     <>
@@ -43,41 +36,44 @@ export function Navbar() {
             )}
           </Link>
 
-          {isLive ? (
-            <div className="flex items-center gap-3 md:gap-8">
-              <Link to="/" className="hidden text-[10px] tracking-luxe text-muted-foreground hover:text-gold md:inline">
-                HOME
-              </Link>
-              <Link to="/empreendimento" className="hidden text-[10px] tracking-luxe text-muted-foreground hover:text-gold md:inline">
-                EMPREENDIMENTO
-              </Link>
-              <Link to="/infraestrutura" className="hidden text-[10px] tracking-luxe text-muted-foreground hover:text-gold md:inline">
-                INFRAESTRUTURA
-              </Link>
-              <Link to="/contato" className="hidden text-[10px] tracking-luxe text-muted-foreground hover:text-gold md:inline">
-                CONTATO
-              </Link>
-              <button
-                onClick={() => setMenuOpen(true)}
-                aria-label="Abrir menu"
-                className="inline-flex items-center gap-2 rounded-full border border-gold/40 px-3 py-1.5 text-[10px] tracking-luxe text-gold transition-all hover:bg-gold/10"
-              >
-                <Menu className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">MENU</span>
-              </button>
-            </div>
-          ) : (
-            <a
-              href="#confirmar"
-              className="hidden text-[10px] tracking-wide-luxe text-muted-foreground transition-colors hover:text-gold md:block"
+          <div className="flex items-center gap-3 md:gap-8">
+            <Link
+              to="/"
+              className="hidden text-[10px] tracking-luxe text-muted-foreground hover:text-gold md:inline"
             >
-              {cta}
-            </a>
-          )}
+              HOME
+            </Link>
+            <Link
+              to="/empreendimento"
+              className="hidden text-[10px] tracking-luxe text-muted-foreground hover:text-gold md:inline"
+            >
+              EMPREENDIMENTO
+            </Link>
+            <Link
+              to="/infraestrutura"
+              className="hidden text-[10px] tracking-luxe text-muted-foreground hover:text-gold md:inline"
+            >
+              INFRAESTRUTURA
+            </Link>
+            <Link
+              to="/contato"
+              className="hidden text-[10px] tracking-luxe text-muted-foreground hover:text-gold md:inline"
+            >
+              CONTATO
+            </Link>
+            <button
+              onClick={() => setMenuOpen(true)}
+              aria-label="Abrir menu"
+              className="inline-flex items-center gap-2 rounded-full border border-gold/40 px-3 py-1.5 text-[10px] tracking-luxe text-gold transition-all hover:bg-gold/10"
+            >
+              <Menu className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">MENU</span>
+            </button>
+          </div>
         </div>
       </nav>
 
-      {isLive && <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} cta={cta} />}
+      <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} cta={cta} />
     </>
   );
 }

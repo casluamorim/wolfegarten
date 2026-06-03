@@ -1,95 +1,85 @@
-# Plano — Fase 2 Editável, Home Premium e Menu Refinado
 
-## 1. Editor completo da Fase 2 no painel admin
+# Wölfegarten — Site Premium + CMS de alto padrão
 
-Hoje `admin.preview.$page.tsx` só renderiza. Vou transformar a aba **Preview / Fase 2** em editor real, espelhando o `ContentEditor` do site público.
+Escopo gigantesco. Proponho dividir em **5 entregas sequenciais**, cada uma testável e publicável. Antes de começar preciso de confirmação no escopo e em algumas decisões técnicas.
 
-- Refatorar `src/routes/admin.preview.$page.tsx` em layout split:
-  - **Esquerda**: árvore de seções da página (Hero, Conceito, Vídeo, Renders, Galeria, Diferenciais, Infraestrutura, Lazer, Localização, Masterplan, CTA, Contato, SEO).
-  - **Direita**: preview ao vivo da página Fase 2 renderizado pelos mesmos componentes públicos, lendo do `site_content` com prefixo `phase2.<page>.<section>.*`.
-- Cada seção edita: textos, títulos, subtítulos, descrições, botões/CTA, **tipo de mídia** (imagem|vídeo) + `MediaPicker`, background, ordem.
-- Aba dedicada de **SEO** por página (`phase2.<page>.seo.title|description|og_image|og_type`).
-- Aba **Menu** edita itens primários e secundários (`phase2.menu.primary[]`, `phase2.menu.secondary[]`).
-- Aba **Formulário de contato** edita campos visíveis e textos.
-- Toda escrita usa `site_content` (já existe RLS admin). Nada novo no schema.
+---
 
-**Isolamento público**: o `useLaunchPhase` já controla `pre-launch | live`. Vou garantir que:
-- Rotas Fase 2 (`/empreendimento`, `/galeria`, etc.) só montam quando `phase === "live"`; em `pre-launch` redirecionam para `/`.
-- `robots.txt` e `sitemap.xml` continuam bloqueando Fase 2 em `pre-launch` (já implementado, só revisar).
-- Editor admin força `?simulate=live` internamente para o iframe de preview, sem afetar produção.
+## Entrega 1 — Encerrar Fase 1 e consolidar Fase 2 como site oficial
 
-## 2. Home da Fase 2 — landing premium
+- Remover do site público: `Countdown`, `Confirm`, `Vagas`, `Marco`, `Experience`, `Info` (Fase 1), `LoadingScreen` antigo, hook `use-launch-phase`, rota `?simulate=live`, lógica de transição.
+- `src/routes/index.tsx` passa a renderizar **somente** `HomePhase2`.
+- Apagar `admin.preview.$page.tsx` (preview de Fase 2) — vira editor real (Entrega 2).
+- Migrar conteúdo seedado de `phase2.home.*` para chaves estáveis `home.*` no `site_content`.
+- Novo `LoadingScreen` premium (logo + fade 0.8–1.5s).
+- Robots/sitemap deixam de depender de fase: indexação ligada sempre.
 
-Criar `src/components/phase2/HomePhase2.tsx` que substitui o conteúdo da rota `/` quando `phase === "live"`. Estrutura:
+## Entrega 2 — Páginas internas premium + blocos de conteúdo
 
-```
-1. HeroPhase2          imagem premium + overlay + tipografia + CTA (SEM vídeo)
-2. VideoIntro          vídeo institucional cinematográfico (SmartVideo)
-3. Conceito            texto + mídia flexível (img|vídeo)
-4. Diferenciais        grid 3-4 cards com ícones
-5. RendersGrid         galeria 3D (bento/masonry)
-6. Infraestrutura      seção visual + mídia
-7. Lazer               carrossel premium
-8. Masterplan          imagem grande zoomável + legenda
-9. Localizacao         mapa + destaques
-10. GaleriaPreview     grid + link "ver galeria completa"
-11. CTAVisita          bloco escuro fullbleed + botão "Agendar visita"
-12. ContatoCompacto    formulário curto (nome, email, telefone, msg)
-```
+- Rotas refinadas: `/empreendimento`, `/infraestrutura`, `/lazer`, `/masterplan`, `/galeria`, `/videos`, `/localizacao`, `/contato`, + sub-páginas `/infraestrutura/academia`, `/infraestrutura/piscina`.
+- Toda página interna no padrão: Hero → conteúdo próprio → galeria/vídeo → CTA + formulário + mapa central de vendas + WhatsApp contextual.
+- **Sistema de blocos reutilizáveis** (sem drag-and-drop visual nesta entrega — render por JSON ordenado no CMS; drag-and-drop fica como Entrega 6 opcional):
+  - Blocos: `hero`, `text_media`, `video_full`, `gallery`, `diferenciais_cards`, `cta`, `map_form`, `lifestyle`, `timeline`, `stats`, `masterplan`, `carousel`.
+  - Tabela `page_blocks (page_slug, order, type, data jsonb, visible, desktop_variant, mobile_variant)`.
+  - Renderer único `<BlockRenderer/>` no público.
+- WhatsApp contextual por página (mensagem editável no CMS).
+- Sticky CTA mobile (Agendar visita + WhatsApp).
 
-Cada bloco lê de `phase2.home.<section>.*` no `site_content`. Componentes reutilizáveis em `src/components/phase2/blocks/`.
+## Entrega 3 — Biblioteca de mídia + categorias + mídia flexível + mobile/desktop
 
-## 3. Hero sem vídeo
+- Reaproveita `media_library` existente. Adiciona:
+  - `media_categories` (CRUD, ordenável).
+  - `media_library.category_id`, `featured boolean` (destaque automático nos heros/carrosséis).
+  - `mobile_variant_id` por bloco para versão mobile distinta.
+- Upload otimizado: PNG/JPG → WEBP (desktop/tablet/mobile/thumb) via Worker (sharp não roda em Workers → uso de **canvas no client** já existente em `img-to-webp.ts`).
+- **Vídeos**: upload direto ao Storage (`site-assets`), poster automático no client (`video-poster.ts` já existe). **Transcoding multi-bitrate real (HLS) NÃO entra** — exige serviço externo (Cloudflare Stream / Mux). Ver pergunta abaixo.
+- Picker visual com filtros, busca, tags, categoria.
 
-Editar `Hero.tsx` (Fase 1 atual continua igual) e novo `HeroPhase2.tsx`:
-- Apenas `<img>` premium com `loading="eager"` + `fetchpriority="high"`.
-- Overlay duplo (gradient + radial) já existente.
-- Tipografia serif cinematográfica.
-- CTA único elegante.
-- Sem `<video>`, sem `SmartVideo`, sem toggle de som.
-- Vídeo migra para a seção `VideoIntro` logo abaixo (autoplay muted + botão som, usando `SmartVideo` já existente).
+## Entrega 4 — Painel admin premium (dashboard + nova IA + CRM)
 
-## 4. Mídia flexível em qualquer seção
+- Novo `/admin` = Dashboard: leads do dia, últimos leads, cliques WhatsApp, visitas, formulários, páginas top, atalhos rápidos, agenda de follow-up.
+- Menu lateral reorganizado: Dashboard · Editar Site · Páginas · Mídia · Galerias · Menus · Leads · Central de Vendas · Logos & Parceiros · SEO · Rodapé · Configurações · Usuários.
+- **CRM de Leads**: tabela `leads` ganha `status` (novo|contato|visita|negociacao|convertido|perdido), `notes`, `next_followup`. Funil Kanban.
+- **Analytics**: tabela `site_events` (page_view, whatsapp_click, form_submit, origin). Dashboard agrega. Mapa de calor — fora de escopo (custoso); fica como "fase futura".
+- Central de Vendas como recurso editável (endereço, telefone, WhatsApp, Maps embed, horários).
+- Rodapé premium 100% editável.
+- Controle de visibilidade por seção/bloco (toggle `visible`).
+- SEO por página com preview Google/Open Graph.
 
-Criar componente `<FlexibleMedia phase2Key="phase2.home.conceito" />`:
-- Lê `<key>.media_type` (`"image" | "video"`).
-- Se `image`: lê `<key>.image_url` + alt.
-- Se `video`: lê `<key>.video_url`, `video_poster`, `video_autoplay`, `video_loop` e usa `SmartVideo`.
-- Editor admin mostra select "Tipo de mídia" + `MediaPicker` filtrado pelo tipo.
+## Entrega 5 — Menu premium overlay + acabamentos
 
-Aplicado em: Conceito, Diferenciais (background), Infraestrutura, Lazer, Masterplan, Localização, CTA, e qualquer bloco futuro.
+- Refazer `Navbar` + `MenuOverlay` no padrão luxury internacional:
+  - Topo limpo: Home · Empreendimento · Infraestrutura · Contato + hamburger dourado.
+  - Overlay fullscreen: esquerda mídia premium, direita links gigantes serifados, rodapé com WhatsApp/contato/redes.
+  - Microinterações, hover refinado, `prefers-reduced-motion`.
+- Pacote final: revisão visual, performance, SEO, sitemap dinâmico cobrindo todas páginas + sub-páginas.
 
-## 5. Menu superior minimalista + overlay premium
-
-Editar `Navbar.tsx`:
-- Desktop visível: **Home, Empreendimento, Infraestrutura, Contato** + ícone "Menu" (hamburger fino dourado).
-- Mobile: logo + ícone Menu (sem itens visíveis).
-- CTA "Agendar Visita" continua como botão dourado discreto à direita.
-
-Criar `src/components/phase2/MenuOverlay.tsx`:
-- Overlay fullscreen, fundo escuro com blur, fade + slide-in.
-- Lista vertical de **todos** os links (primários + secundários: Áreas de Lazer, Masterplan, Galeria, Vídeos, Localização, Experiência, Diferenciais) em tipografia grande serif.
-- Botão fechar (X) no topo direito.
-- Footer com redes sociais e contato.
-- `prefers-reduced-motion` respeitado.
-- Bloqueia scroll do body enquanto aberto.
-
-Itens vêm de `phase2.menu.primary[]` e `phase2.menu.secondary[]` (editáveis no admin), com defaults sensatos.
-
-## 6. Seed de conteúdo Fase 2
-
-Migration leve: inserir defaults `phase2.home.*`, `phase2.menu.*`, `phase2.<page>.seo.*` em `site_content` via `INSERT ... ON CONFLICT DO NOTHING`. Sem mudança de schema.
+---
 
 ## Detalhes técnicos
 
-- Sem mudança em `media_library`, `partner_logos`, `site_assets`.
-- Reusa: `SmartVideo`, `MediaPicker`, `MediaLibrary`, `useSiteContent`, `useLaunchPhase`, `Phase2Page`.
-- Rotas Fase 2 existentes (`/empreendimento`, `/galeria`, etc.) ganham guard: `if (phase !== "live") redirect("/")`.
-- `index.tsx` passa a renderizar `<HomePhase1 />` ou `<HomePhase2 />` via `useLaunchPhase()`.
-- SEO por página continua via `head()` do TanStack, lendo defaults do `site_content` quando o admin sobrescrever.
+- **Stack**: continua TanStack Start + Lovable Cloud (Supabase). Sem novas dependências externas pesadas.
+- **Banco** — novas tabelas/migrations:
+  - `page_blocks`, `media_categories`, `central_vendas` (singleton), `site_events`, `lead_followups`.
+  - `leads`: adicionar `status`, `source`, `notes`, `next_followup`, `page_origin`.
+  - `media_library`: `category_id`, `featured`, `mobile_variant_id`.
+  - Todas com RLS: leitura pública onde faz sentido (blocos visíveis, mídia, central), escrita só `admin`.
+- **Storage**: bucket `site-assets` já existe (público). Tudo continua ali.
+- **WhatsApp contextual**: configurado por bloco/página em `site_content` (`whatsapp.<slug>.message`).
+- **Performance vídeo**: continua `SmartVideo` (connection-aware, poster→video crossfade). Para vídeos >100MB recomendo Cloudflare Stream — ver pergunta 2.
 
-## Fora de escopo
+## Fora de escopo (proponho deixar para depois)
 
-- Transcoding HLS multi-bitrate real (Lovable Storage entrega via CDN; player já é adaptativo).
-- Drag-and-drop de reordenação de **seções** dentro do editor (reordenação fica em itens de menu/galeria onde já existe).
-- Mapa interativo real em Localização (placeholder com imagem + endereço, hook para Google Maps fica para depois).
+- HLS multi-bitrate real (depende de provedor externo pago).
+- Drag-and-drop visual de blocos (entrego ordenação por número/setas; DnD vira Entrega 6).
+- Mapa de calor de cliques.
+- A/B testing de heros.
+
+## Perguntas antes de começar
+
+1. **Posso seguir nessa ordem (Entrega 1 → 5), fazendo uma de cada vez com você aprovando entre elas?** Tentar tudo de uma vez vira um patch impossível de revisar.
+2. **Vídeos pesados (>100MB, multi-bitrate real)**: aceito usar **Cloudflare Stream** (serviço pago externo, melhor experiência) ou ficamos só com upload direto no Storage + `SmartVideo` (sem HLS, mas grátis e já funciona)?
+3. **Drag-and-drop visual de blocos** é obrigatório agora ou posso entregar primeiro a ordenação por setas/número (muito mais rápido) e o DnD depois?
+4. **Posso remover dados de Fase 1 do banco** (`site_content` com chaves antigas tipo `confirm.*`, `countdown.*`, `vagas.*`) ou prefere manter como histórico?
+
+Responde com 1/2/3/4 e eu começo pela Entrega 1.

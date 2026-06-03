@@ -22,7 +22,6 @@ import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
-import { Route as AdminPreviewPageRouteImport } from './routes/admin.preview.$page'
 
 const VideosRoute = VideosRouteImport.update({
   id: '/videos',
@@ -89,11 +88,6 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminPreviewPageRoute = AdminPreviewPageRouteImport.update({
-  id: '/admin/preview/$page',
-  path: '/admin/preview/$page',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -109,7 +103,6 @@ export interface FileRoutesByFullPath {
   '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
-  '/admin/preview/$page': typeof AdminPreviewPageRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -125,7 +118,6 @@ export interface FileRoutesByTo {
   '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin': typeof AdminIndexRoute
-  '/admin/preview/$page': typeof AdminPreviewPageRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -142,7 +134,6 @@ export interface FileRoutesById {
   '/videos': typeof VideosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/': typeof AdminIndexRoute
-  '/admin/preview/$page': typeof AdminPreviewPageRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -160,7 +151,6 @@ export interface FileRouteTypes {
     | '/videos'
     | '/admin/login'
     | '/admin/'
-    | '/admin/preview/$page'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -176,7 +166,6 @@ export interface FileRouteTypes {
     | '/videos'
     | '/admin/login'
     | '/admin'
-    | '/admin/preview/$page'
   id:
     | '__root__'
     | '/'
@@ -192,7 +181,6 @@ export interface FileRouteTypes {
     | '/videos'
     | '/admin/login'
     | '/admin/'
-    | '/admin/preview/$page'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -209,7 +197,6 @@ export interface RootRouteChildren {
   VideosRoute: typeof VideosRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminIndexRoute: typeof AdminIndexRoute
-  AdminPreviewPageRoute: typeof AdminPreviewPageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -305,13 +292,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/preview/$page': {
-      id: '/admin/preview/$page'
-      path: '/admin/preview/$page'
-      fullPath: '/admin/preview/$page'
-      preLoaderRoute: typeof AdminPreviewPageRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -329,7 +309,6 @@ const rootRouteChildren: RootRouteChildren = {
   VideosRoute: VideosRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminIndexRoute: AdminIndexRoute,
-  AdminPreviewPageRoute: AdminPreviewPageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
