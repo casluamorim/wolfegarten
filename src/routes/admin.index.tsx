@@ -9,8 +9,6 @@ import { LivePreview } from "@/components/admin/LivePreview";
 import { LogosPanel } from "@/components/admin/LogosPanel";
 import { MediaLibrary } from "@/components/admin/MediaLibrary";
 import { SettingsPanel } from "@/components/admin/SettingsPanel";
-import { SimulationPanel } from "@/components/admin/SimulationPanel";
-import { useSimulation } from "@/hooks/use-simulation";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminPage,
@@ -39,7 +37,7 @@ function AdminPage() {
   const { session, loading } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("editar");
-  const sim = useSimulation();
+  
 
   useEffect(() => {
     if (!loading && !session) navigate({ to: "/admin/login" });
@@ -107,13 +105,6 @@ function AdminPage() {
           ))}
         </nav>
       </header>
-
-      {sim.enabled && (
-        <div className="border-b border-gold/40 bg-gold/10 px-4 py-2 text-center text-[10px] tracking-luxe text-gold">
-          MODO SIMULAÇÃO ATIVO · {sim.iso ? new Date(sim.iso).toLocaleString("pt-BR") : "data não definida"}
-          <button onClick={sim.clear} className="ml-3 underline hover:text-offwhite">desligar</button>
-        </div>
-      )}
 
       <main className="mx-auto max-w-[1600px] px-4 py-6 md:px-6 md:py-8">
         <div className={showPreview ? "grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" : ""}>
