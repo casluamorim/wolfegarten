@@ -1,93 +1,55 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LoadingScreen } from "@/components/LoadingScreen";
-import { Navbar } from "@/components/Navbar";
-import { Hero } from "@/components/Hero";
-import { Countdown } from "@/components/Countdown";
-import { Marco } from "@/components/Marco";
-import { Experience } from "@/components/Experience";
-import { Info } from "@/components/Info";
-import { Vagas } from "@/components/Vagas";
-import { Confirm } from "@/components/Confirm";
-import { Footer } from "@/components/Footer";
-import { useSiteContent } from "@/hooks/use-site-content";
-import { useLaunchPhase } from "@/hooks/use-launch-phase";
 import { useEffect } from "react";
+import { LoadingScreen } from "@/components/LoadingScreen";
 import { HomePhase2 } from "@/components/phase2/HomePhase2";
+import { useSiteContent } from "@/hooks/use-site-content";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Wölfegarten — Convite Exclusivo | Alto padrão em Indaial" },
+      { title: "Wölfegarten — Loteamento de altíssimo padrão em Indaial/SC" },
       {
         name: "description",
         content:
-          "Experiência Wölfegarten: convite exclusivo para o lançamento do mais novo loteamento de altíssimo padrão em Indaial, SC. 16 de maio.",
+          "Wölfegarten é um loteamento fechado de altíssimo padrão em Indaial/SC. Exclusividade, natureza e um novo conceito de viver.",
       },
-      { property: "og:title", content: "Experiência Wölfegarten — Convite Exclusivo" },
+      { property: "og:title", content: "Wölfegarten — Alto padrão em Indaial/SC" },
       {
         property: "og:description",
         content:
-          "Um encontro para quem está pronto para viver e investir em um novo padrão.",
+          "Loteamento fechado de altíssimo padrão. Exclusividade, sofisticação e natureza em Indaial/SC.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://wolfegarten.lovable.app/" },
     ],
+    links: [{ rel: "canonical", href: "https://wolfegarten.lovable.app/" }],
   }),
   component: Index,
 });
 
 function Index() {
   const { data } = useSiteContent();
-  const phase = useLaunchPhase();
 
-  // Reforço de noindex enquanto pré-lançamento (robots.txt já bloqueia, mas alguns crawlers ignoram)
-  useEffect(() => {
-    const ensure = (name: string, content: string) => {
-      let el = document.querySelector<HTMLMetaElement>(`meta[name="${name}"]`);
-      if (!el) {
-        el = document.createElement("meta");
-        el.setAttribute("name", name);
-        document.head.appendChild(el);
-      }
-      el.setAttribute("content", content);
-    };
-    ensure("robots", phase === "live" ? "index, follow" : "noindex, nofollow");
-  }, [phase]);
-
-  // Atualiza title/meta dinamicamente quando o CMS muda
+  // CMS-driven overrides para SEO
   useEffect(() => {
     if (!data) return;
-    const t = data["seo.title"];
-    if (typeof t === "string") document.title = t;
+    const t = data["seo.title"] ?? data["phase2.home.seo.title"];
+    if (typeof t === "string" && t) document.title = t;
     const setMeta = (sel: string, value: string) => {
       const el = document.querySelector<HTMLMetaElement>(sel);
       if (el) el.setAttribute("content", value);
     };
-    if (typeof data["seo.description"] === "string")
-      setMeta('meta[name="description"]', data["seo.description"] as string);
-    if (typeof data["seo.og_title"] === "string")
-      setMeta('meta[property="og:title"]', data["seo.og_title"] as string);
-    if (typeof data["seo.og_description"] === "string")
-      setMeta('meta[property="og:description"]', data["seo.og_description"] as string);
+    const desc = data["seo.description"] ?? data["phase2.home.seo.description"];
+    if (typeof desc === "string" && desc) {
+      setMeta('meta[name="description"]', desc);
+      setMeta('meta[property="og:description"]', desc);
+    }
   }, [data]);
-
-  if (phase === "live") {
-    return <HomePhase2 />;
-  }
 
   return (
     <>
       <LoadingScreen />
-      <Navbar />
-      <main>
-        <Hero />
-        <Countdown />
-        <Marco />
-        <Experience />
-        <Info />
-        <Vagas />
-        <Confirm />
-      </main>
-      <Footer />
+      <HomePhase2 />
     </>
   );
 }

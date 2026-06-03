@@ -1,7 +1,4 @@
-import { useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
 import { useText } from "@/hooks/use-site-content";
-import { useLaunchPhase } from "@/hooks/use-launch-phase";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { GalleryGrid } from "@/components/phase2/GalleryGrid";
@@ -11,21 +8,9 @@ import { VideoPlaybackProvider } from "@/components/phase2/VideoPlaybackContext"
 interface Props {
   pageKey: string;
   variant?: "simple" | "galeria" | "videos" | "contato";
-  guard?: boolean;
 }
 
-export function Phase2Page({ pageKey, variant = "simple", guard = true }: Props) {
-  const phase = useLaunchPhase();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (guard && phase !== "live") {
-      navigate({ to: "/" });
-    }
-  }, [guard, phase, navigate]);
-
-  if (guard && phase !== "live") return null;
-
+export function Phase2Page({ pageKey, variant = "simple" }: Props) {
   return (
     <VideoPlaybackProvider>
       <div className="min-h-screen bg-background">
@@ -84,8 +69,6 @@ function Phase2Content({ pageKey, variant }: { pageKey: string; variant: Props["
 }
 
 export function phase2Head(pageKey: string, defaults: { title: string; description: string }) {
-  // SSR-safe: returns static defaults; client overrides via React effect when needed.
-  // TanStack head() is not reactive to React state during SSR, so we keep defaults.
   return () => ({
     meta: [
       { title: `${defaults.title} — WÖLFEGARTEN` },
