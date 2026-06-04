@@ -36,7 +36,24 @@ const SECTIONS: S[] = [
       { key: "contact.whatsapp", label: "WhatsApp (DDI+DDD+número)", kind: "tel", hint: "Ex.: 5547988178508" },
       { key: "contact.phone", label: "Telefone exibido" },
       { key: "contact.email", label: "E-mail" },
-      { key: "contact.address", label: "Endereço / Cidade", kind: "textarea" },
+      { key: "contact.address", label: "Endereço / Cidade (rodapé)", kind: "textarea" },
+    ],
+  },
+  {
+    id: "sales",
+    title: "Central de Vendas",
+    description:
+      "Endereço e mapa exibidos nas páginas internas e na home. Use o campo de embed do Google Maps para um mapa preciso.",
+    fields: [
+      { key: "sales.label", label: "Nome exibido", hint: "Ex.: Central de Vendas Wölfegarten" },
+      { key: "sales.address", label: "Endereço completo", kind: "textarea", hint: "Ex.: Rua das Palmeiras, 123 — Centro, Indaial/SC" },
+      {
+        key: "sales.map_embed",
+        label: "URL de embed do Google Maps (opcional)",
+        kind: "url",
+        hint: "No Google Maps: Compartilhar → Incorporar um mapa → copie a URL dentro de src=\"...\". Se vazio, o mapa usa o endereço acima.",
+      },
+      { key: "sales.hours", label: "Horário de atendimento", hint: "Ex.: Seg–Sex 9h–18h · Sáb 9h–13h" },
     ],
   },
   {
