@@ -36,9 +36,11 @@ export function HomePhase2() {
         <LocalizacaoSection />
         <GaleriaPreviewSection />
         <CTAVisitaSection />
-        <Confirm />
+        <SalesMap />
+        <VisitForm origem="Home" />
       </main>
       <Footer />
+      <WhatsAppFAB />
     </VideoPlaybackProvider>
   );
 }
