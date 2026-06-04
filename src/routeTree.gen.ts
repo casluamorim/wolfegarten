@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as VideosRouteImport } from './routes/videos'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as PiscinaRouteImport } from './routes/piscina'
 import { Route as MasterplanRouteImport } from './routes/masterplan'
 import { Route as LocalizacaoRouteImport } from './routes/localizacao'
 import { Route as LazerRouteImport } from './routes/lazer'
@@ -19,6 +20,7 @@ import { Route as InfraestruturaRouteImport } from './routes/infraestrutura'
 import { Route as GaleriaRouteImport } from './routes/galeria'
 import { Route as EmpreendimentoRouteImport } from './routes/empreendimento'
 import { Route as ContatoRouteImport } from './routes/contato'
+import { Route as AcademiasRouteImport } from './routes/academias'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
@@ -36,6 +38,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
   id: '/robots.txt',
   path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PiscinaRoute = PiscinaRouteImport.update({
+  id: '/piscina',
+  path: '/piscina',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MasterplanRoute = MasterplanRouteImport.update({
@@ -73,6 +80,11 @@ const ContatoRoute = ContatoRouteImport.update({
   path: '/contato',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AcademiasRoute = AcademiasRouteImport.update({
+  id: '/academias',
+  path: '/academias',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -91,6 +103,7 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/academias': typeof AcademiasRoute
   '/contato': typeof ContatoRoute
   '/empreendimento': typeof EmpreendimentoRoute
   '/galeria': typeof GaleriaRoute
@@ -98,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/lazer': typeof LazerRoute
   '/localizacao': typeof LocalizacaoRoute
   '/masterplan': typeof MasterplanRoute
+  '/piscina': typeof PiscinaRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/videos': typeof VideosRoute
@@ -106,6 +120,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/academias': typeof AcademiasRoute
   '/contato': typeof ContatoRoute
   '/empreendimento': typeof EmpreendimentoRoute
   '/galeria': typeof GaleriaRoute
@@ -113,6 +128,7 @@ export interface FileRoutesByTo {
   '/lazer': typeof LazerRoute
   '/localizacao': typeof LocalizacaoRoute
   '/masterplan': typeof MasterplanRoute
+  '/piscina': typeof PiscinaRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/videos': typeof VideosRoute
@@ -122,6 +138,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/academias': typeof AcademiasRoute
   '/contato': typeof ContatoRoute
   '/empreendimento': typeof EmpreendimentoRoute
   '/galeria': typeof GaleriaRoute
@@ -129,6 +146,7 @@ export interface FileRoutesById {
   '/lazer': typeof LazerRoute
   '/localizacao': typeof LocalizacaoRoute
   '/masterplan': typeof MasterplanRoute
+  '/piscina': typeof PiscinaRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/videos': typeof VideosRoute
@@ -139,6 +157,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/academias'
     | '/contato'
     | '/empreendimento'
     | '/galeria'
@@ -146,6 +165,7 @@ export interface FileRouteTypes {
     | '/lazer'
     | '/localizacao'
     | '/masterplan'
+    | '/piscina'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/videos'
@@ -154,6 +174,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/academias'
     | '/contato'
     | '/empreendimento'
     | '/galeria'
@@ -161,6 +182,7 @@ export interface FileRouteTypes {
     | '/lazer'
     | '/localizacao'
     | '/masterplan'
+    | '/piscina'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/videos'
@@ -169,6 +191,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/academias'
     | '/contato'
     | '/empreendimento'
     | '/galeria'
@@ -176,6 +199,7 @@ export interface FileRouteTypes {
     | '/lazer'
     | '/localizacao'
     | '/masterplan'
+    | '/piscina'
     | '/robots.txt'
     | '/sitemap.xml'
     | '/videos'
@@ -185,6 +209,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcademiasRoute: typeof AcademiasRoute
   ContatoRoute: typeof ContatoRoute
   EmpreendimentoRoute: typeof EmpreendimentoRoute
   GaleriaRoute: typeof GaleriaRoute
@@ -192,6 +217,7 @@ export interface RootRouteChildren {
   LazerRoute: typeof LazerRoute
   LocalizacaoRoute: typeof LocalizacaoRoute
   MasterplanRoute: typeof MasterplanRoute
+  PiscinaRoute: typeof PiscinaRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VideosRoute: typeof VideosRoute
@@ -220,6 +246,13 @@ declare module '@tanstack/react-router' {
       path: '/robots.txt'
       fullPath: '/robots.txt'
       preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/piscina': {
+      id: '/piscina'
+      path: '/piscina'
+      fullPath: '/piscina'
+      preLoaderRoute: typeof PiscinaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/masterplan': {
@@ -271,6 +304,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContatoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/academias': {
+      id: '/academias'
+      path: '/academias'
+      fullPath: '/academias'
+      preLoaderRoute: typeof AcademiasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -297,6 +337,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcademiasRoute: AcademiasRoute,
   ContatoRoute: ContatoRoute,
   EmpreendimentoRoute: EmpreendimentoRoute,
   GaleriaRoute: GaleriaRoute,
@@ -304,6 +345,7 @@ const rootRouteChildren: RootRouteChildren = {
   LazerRoute: LazerRoute,
   LocalizacaoRoute: LocalizacaoRoute,
   MasterplanRoute: MasterplanRoute,
+  PiscinaRoute: PiscinaRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   VideosRoute: VideosRoute,
@@ -313,3 +355,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

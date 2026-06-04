@@ -122,17 +122,19 @@ export const SECTIONS: ContentSection[] = [
     ],
   },
   {
-    id: "confirm",
-    title: "Formulário de Confirmação",
+    id: "visit",
+    title: "Formulário de Agendamento de Visita",
+    description: "Substitui o antigo formulário de confirmação de presença.",
     fields: [
-      { key: "confirm.eyebrow", label: "Etiqueta" },
-      { key: "confirm.title", label: "Título" },
-      { key: "confirm.subtitle", label: "Subtítulo", kind: "textarea" },
-      { key: "confirm.cta", label: "Texto do botão" },
-      { key: "confirm.contact_name", label: "Nome do contato" },
-      { key: "confirm.contact_phone_display", label: "Telefone exibido" },
+      { key: "visit.eyebrow", label: "Etiqueta" },
+      { key: "visit.title", label: "Título" },
+      { key: "visit.subtitle", label: "Subtítulo", kind: "textarea" },
+      { key: "visit.cta", label: "Texto do botão" },
+      { key: "visit.contact_name", label: "Nome do contato" },
+      { key: "visit.contact_phone_display", label: "Telefone exibido" },
     ],
   },
+  ...buildInternalPageSections(),
   {
     id: "contact",
     title: "Contato & Redes Sociais",
@@ -152,6 +154,42 @@ export const SECTIONS: ContentSection[] = [
     ],
   },
 ];
+
+const INTERNAL_PAGES: { slug: string; label: string }[] = [
+  { slug: "empreendimento", label: "O Empreendimento" },
+  { slug: "infraestrutura", label: "Infraestrutura" },
+  { slug: "academias", label: "Academias" },
+  { slug: "piscina", label: "Piscina" },
+  { slug: "lazer", label: "Áreas de Lazer" },
+  { slug: "masterplan", label: "Masterplan" },
+  { slug: "galeria", label: "Galeria" },
+  { slug: "videos", label: "Vídeos" },
+  { slug: "localizacao", label: "Localização" },
+  { slug: "contato", label: "Contato" },
+];
+
+function buildInternalPageSections(): ContentSection[] {
+  return INTERNAL_PAGES.map(({ slug, label }) => ({
+    id: `page-${slug}`,
+    title: `Página: ${label}`,
+    description: `Edite todos os textos, imagens, galeria e vídeos da página /${slug}.`,
+    fields: [
+      { key: `page.${slug}.eyebrow`, label: "Etiqueta superior" },
+      { key: `page.${slug}.title`, label: "Título da página" },
+      { key: `page.${slug}.subtitle`, label: "Subtítulo", kind: "textarea" },
+      { key: `page.${slug}.hero_image`, label: "Imagem do hero", kind: "media", mediaKinds: ["image"] },
+      { key: `page.${slug}.intro`, label: "Texto de abertura", kind: "textarea" },
+      { key: `page.${slug}.content`, label: "Conteúdo completo", kind: "textarea", hint: "Use Enter para parágrafos." },
+      { key: `page.${slug}.gallery_tag`, label: "Tag da galeria", hint: `Padrão: ${slug}. Marque as imagens com esta tag na biblioteca de mídia.` },
+      { key: `page.${slug}.videos_tag`, label: "Tag dos vídeos", hint: `Padrão: ${slug}.` },
+      { key: `page.${slug}.cta_title`, label: "CTA — Título" },
+      { key: `page.${slug}.cta_subtitle`, label: "CTA — Subtítulo", kind: "textarea" },
+      { key: `page.${slug}.cta_label`, label: "CTA — Texto do botão" },
+      { key: `page.${slug}.seo_title`, label: "SEO — Title" },
+      { key: `page.${slug}.seo_description`, label: "SEO — Meta description", kind: "textarea" },
+    ],
+  }));
+}
 
 export function ContentEditor() {
   const { data, isLoading } = useSiteContent();

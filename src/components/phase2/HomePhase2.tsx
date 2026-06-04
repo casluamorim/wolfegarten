@@ -8,7 +8,9 @@ import { SmartVideo, type SmartVideoSource } from "@/components/SmartVideo";
 import { FlexibleMedia } from "@/components/phase2/FlexibleMedia";
 import { GalleryGrid } from "@/components/phase2/GalleryGrid";
 import { VideoPlaybackProvider } from "@/components/phase2/VideoPlaybackContext";
-import { Confirm } from "@/components/Confirm";
+import { VisitForm } from "@/components/phase2/VisitForm";
+import { SalesMap } from "@/components/phase2/SalesMap";
+import { WhatsAppFAB } from "@/components/phase2/WhatsAppFAB";
 
 function inferType(url: string): string | undefined {
   const u = url.toLowerCase().split("?")[0];
@@ -34,9 +36,11 @@ export function HomePhase2() {
         <LocalizacaoSection />
         <GaleriaPreviewSection />
         <CTAVisitaSection />
-        <Confirm />
+        <SalesMap />
+        <VisitForm origem="Home" />
       </main>
       <Footer />
+      <WhatsAppFAB />
     </VideoPlaybackProvider>
   );
 }
