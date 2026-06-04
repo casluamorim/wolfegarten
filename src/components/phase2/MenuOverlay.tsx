@@ -22,6 +22,8 @@ const FALLBACK_PRIMARY: MenuItem[] = [
 ];
 
 const FALLBACK_SECONDARY: MenuItem[] = [
+  { label: "Academias", to: "/academias" },
+  { label: "Piscina", to: "/piscina" },
   { label: "Áreas de Lazer", to: "/lazer" },
   { label: "Masterplan", to: "/masterplan" },
   { label: "Galeria", to: "/galeria" },
