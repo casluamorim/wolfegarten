@@ -4,6 +4,8 @@ const PAGES = [
   "",
   "empreendimento",
   "infraestrutura",
+  "academias",
+  "piscina",
   "lazer",
   "masterplan",
   "galeria",
