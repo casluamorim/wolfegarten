@@ -5,10 +5,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { ALL_ASSET_KEYS, ASSET_LABELS, type AssetKey } from "@/hooks/use-site-asset";
 import { ContentEditor } from "@/components/admin/ContentEditor";
-import { LivePreview } from "@/components/admin/LivePreview";
 import { LogosPanel } from "@/components/admin/LogosPanel";
 import { MediaLibrary } from "@/components/admin/MediaLibrary";
 import { SettingsPanel } from "@/components/admin/SettingsPanel";
+import { Dashboard } from "@/components/admin/Dashboard";
+import { UsersPanel } from "@/components/admin/UsersPanel";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminPage,
@@ -17,18 +18,8 @@ export const Route = createFileRoute("/admin/")({
   }),
 });
 
-type Tab = "editar" | "midia" | "logos" | "config" | "leads";
+type Tab = "dashboard" | "editar" | "midia" | "logos" | "config" | "leads" | "usuarios";
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: "editar", label: "EDITAR SITE" },
-  { id: "midia", label: "MÍDIA" },
-  { id: "logos", label: "LOGOS" },
-  { id: "config", label: "CONFIGURAÇÕES" },
-  { id: "leads", label: "LEADS" },
-];
-
-// Tudo que não é logo categorizada continua na aba Mídia.
-// A "logo-main" continua editável aqui (única identificada).
 const MEDIA_KEYS: AssetKey[] = ALL_ASSET_KEYS.filter(
   (k) => !k.startsWith("logo-") || k === "logo-main",
 );
@@ -36,53 +27,71 @@ const MEDIA_KEYS: AssetKey[] = ALL_ASSET_KEYS.filter(
 function AdminPage() {
   const { session, loading } = useAuth();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<Tab>("editar");
-  
+  const [tab, setTab] = useState<Tab>("dashboard");
 
   useEffect(() => {
     if (!loading && !session) navigate({ to: "/admin/login" });
   }, [loading, session, navigate]);
 
-  const isAdmin = useQuery({
+  const rolesQ = useQuery({
     enabled: !!session,
-    queryKey: ["is-admin", session?.user.id],
+    queryKey: ["my-roles", session?.user.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", session!.user.id)
-        .eq("role", "admin")
-        .maybeSingle();
+        .eq("user_id", session!.user.id);
       if (error) throw error;
-      return !!data;
+      return (data ?? []).map((r) => r.role as string);
     },
   });
 
   if (loading || !session) return null;
-  if (isAdmin.isLoading)
+  if (rolesQ.isLoading)
     return <div className="p-10 text-center text-sm text-muted-foreground">Carregando...</div>;
 
-  if (!isAdmin.data) {
+  const roles = rolesQ.data ?? [];
+  const isAdmin = roles.includes("admin");
+  const isManager = roles.includes("manager");
+  const isSales = roles.includes("salesperson");
+  const hasAccess = isAdmin || isManager || isSales;
+
+  if (!hasAccess) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-6 px-6 text-center">
         <h1 className="font-serif text-2xl text-offwhite">Acesso restrito</h1>
-        <p className="text-sm text-muted-foreground">Sua conta não tem permissão de administrador.</p>
-        <button onClick={() => supabase.auth.signOut()} className="btn-ghost-luxe">Sair</button>
+        <p className="text-sm text-muted-foreground">
+          Sua conta não tem permissão para acessar o painel.
+        </p>
+        <button onClick={() => supabase.auth.signOut()} className="btn-ghost-luxe">
+          Sair
+        </button>
       </div>
     );
   }
 
-  const showPreview = tab === "editar" || tab === "midia" || tab === "logos";
+  const TABS: { id: Tab; label: string; show: boolean }[] = [
+    { id: "dashboard", label: "DASHBOARD", show: true },
+    { id: "editar", label: "EDITAR SITE", show: isAdmin || isManager },
+    { id: "midia", label: "MÍDIA", show: true },
+    { id: "logos", label: "LOGOS", show: isAdmin || isManager },
+    { id: "leads", label: "LEADS", show: true },
+    { id: "usuarios", label: "USUÁRIOS", show: isAdmin || isManager },
+    { id: "config", label: "CONFIGURAÇÕES", show: isAdmin },
+  ].filter((t) => t.show);
 
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">
-        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-4 px-4 py-4 md:px-6 md:py-6">
+        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-4 px-4 py-4 md:px-6 md:py-6">
           <Link to="/" className="text-[11px] tracking-luxe text-offwhite">
             WÖLFEGARTEN · ADMIN
           </Link>
           <div className="flex items-center gap-4">
-            <span className="hidden text-[10px] text-muted-foreground md:inline">{session.user.email}</span>
+            <span className="hidden text-[10px] text-muted-foreground md:inline">
+              {session.user.email} ·{" "}
+              {isAdmin ? "ADMIN" : isManager ? "GERENTE" : "VENDEDOR"}
+            </span>
             <button
               onClick={() => supabase.auth.signOut().then(() => navigate({ to: "/admin/login" }))}
               className="text-[10px] tracking-luxe text-muted-foreground hover:text-gold"
@@ -91,7 +100,7 @@ function AdminPage() {
             </button>
           </div>
         </div>
-        <nav className="mx-auto flex max-w-[1600px] gap-5 overflow-x-auto px-4 md:gap-8 md:px-6">
+        <nav className="mx-auto flex max-w-[1400px] gap-5 overflow-x-auto px-4 md:gap-8 md:px-6">
           {TABS.map((t) => (
             <button
               key={t.id}
@@ -106,26 +115,31 @@ function AdminPage() {
         </nav>
       </header>
 
-      <main className="mx-auto max-w-[1600px] px-4 py-6 md:px-6 md:py-8">
-        <div className={showPreview ? "grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]" : ""}>
-          <div>
-            {tab === "editar" && <ContentEditor />}
-            {tab === "midia" && (
-              <div className="space-y-10">
-                <MediaLibrary />
-                <div>
-                  <h3 className="font-serif text-2xl text-offwhite">Identidade & assets fixos</h3>
-                  <p className="mt-1 text-xs text-muted-foreground">Logo principal e assets identificados (opcional — uso legado).</p>
-                  <div className="mt-6"><AssetsPanel keys={MEDIA_KEYS} title="" /></div>
+      <main className="mx-auto max-w-[1400px] px-4 py-6 md:px-6 md:py-8">
+        {tab === "dashboard" && <Dashboard onGoLeads={() => setTab("leads")} />}
+        {tab === "editar" && (isAdmin || isManager) && <ContentEditor />}
+        {tab === "midia" && (
+          <div className="space-y-10">
+            <MediaLibrary />
+            {(isAdmin || isManager) && (
+              <div>
+                <h3 className="font-serif text-2xl text-offwhite">Identidade & assets fixos</h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Logo principal e assets identificados (uso legado).
+                </p>
+                <div className="mt-6">
+                  <AssetsPanel keys={MEDIA_KEYS} />
                 </div>
               </div>
             )}
-            {tab === "logos" && <LogosPanel />}
-            {tab === "config" && <SettingsPanel />}
-            {tab === "leads" && <LeadsPanel />}
           </div>
-          {showPreview && <LivePreview />}
-        </div>
+        )}
+        {tab === "logos" && (isAdmin || isManager) && <LogosPanel />}
+        {tab === "config" && isAdmin && <SettingsPanel />}
+        {tab === "leads" && <LeadsPanel />}
+        {tab === "usuarios" && (isAdmin || isManager) && (
+          <UsersPanel currentUserId={session.user.id} isAdmin={isAdmin} />
+        )}
       </main>
     </div>
   );
@@ -166,7 +180,9 @@ function LeadsPanel() {
         l.como_conheceu ?? "",
       ]),
     ];
-    const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const csv = rows
+      .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -182,23 +198,29 @@ function LeadsPanel() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h2 className="font-serif text-3xl text-offwhite">Leads</h2>
-          <p className="mt-1 text-xs text-muted-foreground">{data?.length ?? 0} confirmações</p>
+          <p className="mt-1 text-xs text-muted-foreground">{data?.length ?? 0} contatos</p>
         </div>
-        <button onClick={exportCsv} className="btn-ghost-luxe">Exportar CSV</button>
+        <button onClick={exportCsv} className="btn-ghost-luxe">
+          Exportar CSV
+        </button>
       </div>
       <div className="overflow-x-auto rounded border border-border">
         <table className="w-full text-sm">
           <thead className="bg-card text-[10px] tracking-luxe text-muted-foreground">
             <tr>
               {["DATA", "NOME", "TELEFONE", "E-MAIL", "CIDADE", "ORIGEM", ""].map((h) => (
-                <th key={h} className="px-4 py-3 text-left font-normal">{h}</th>
+                <th key={h} className="px-4 py-3 text-left font-normal">
+                  {h}
+                </th>
               ))}
             </tr>
           </thead>
           <tbody>
             {data?.map((l) => (
               <tr key={l.id} className="border-t border-border text-offwhite/80">
-                <td className="px-4 py-3 text-xs">{new Date(l.created_at).toLocaleString("pt-BR")}</td>
+                <td className="px-4 py-3 text-xs">
+                  {new Date(l.created_at).toLocaleString("pt-BR")}
+                </td>
                 <td className="px-4 py-3">{l.nome}</td>
                 <td className="px-4 py-3">
                   <a
@@ -237,18 +259,12 @@ function LeadsPanel() {
   );
 }
 
-function AssetsPanel({ keys, title }: { keys: AssetKey[]; title: string }) {
+function AssetsPanel({ keys }: { keys: AssetKey[] }) {
   return (
-    <div>
-      <h2 className="font-serif text-3xl text-offwhite">{title}</h2>
-      <p className="mt-1 text-xs text-muted-foreground">
-        Hero, seção Experiência, fundo final e logo principal. As demais logos ficam na aba <strong>Logos</strong>.
-      </p>
-      <div className="mt-8 grid gap-5 md:grid-cols-2">
-        {keys.map((k) => (
-          <AssetCard key={k} assetKey={k} />
-        ))}
-      </div>
+    <div className="grid gap-5 md:grid-cols-2">
+      {keys.map((k) => (
+        <AssetCard key={k} assetKey={k} />
+      ))}
     </div>
   );
 }
@@ -325,7 +341,11 @@ function AssetCard({ assetKey }: { assetKey: AssetKey }) {
       >
         <input
           type="file"
-          accept={isLogo ? "image/png,image/svg+xml,image/webp,image/jpeg" : "image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm"}
+          accept={
+            isLogo
+              ? "image/png,image/svg+xml,image/webp,image/jpeg"
+              : "image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm"
+          }
           className="hidden"
           disabled={busy}
           onChange={(e) => e.target.files?.[0] && onUpload(e.target.files[0])}
