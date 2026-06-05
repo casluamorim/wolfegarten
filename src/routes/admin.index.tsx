@@ -70,15 +70,19 @@ function AdminPage() {
     );
   }
 
-  const TABS: { id: Tab; label: string; show: boolean }[] = [
-    { id: "dashboard", label: "DASHBOARD", show: true },
-    { id: "editar", label: "EDITAR SITE", show: isAdmin || isManager },
-    { id: "midia", label: "MÍDIA", show: true },
-    { id: "logos", label: "LOGOS", show: isAdmin || isManager },
-    { id: "leads", label: "LEADS", show: true },
-    { id: "usuarios", label: "USUÁRIOS", show: isAdmin || isManager },
-    { id: "config", label: "CONFIGURAÇÕES", show: isAdmin },
-  ].filter((t) => t.show);
+  const TABS: { id: Tab; label: string; show: boolean }[] = (
+    [
+      { id: "dashboard", label: "DASHBOARD", show: true },
+      { id: "editar", label: "EDITAR SITE", show: isAdmin || isManager },
+      { id: "midia", label: "MÍDIA", show: true },
+      { id: "logos", label: "LOGOS", show: isAdmin || isManager },
+      { id: "leads", label: "LEADS", show: true },
+      { id: "usuarios", label: "USUÁRIOS", show: isAdmin || isManager },
+      { id: "config", label: "CONFIGURAÇÕES", show: isAdmin },
+    ] as const
+  )
+    .filter((t) => t.show)
+    .map((t) => ({ id: t.id as Tab, label: t.label, show: t.show }));
 
   return (
     <div className="min-h-screen bg-background">
