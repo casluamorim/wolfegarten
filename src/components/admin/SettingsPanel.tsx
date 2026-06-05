@@ -40,10 +40,20 @@ const SECTIONS: S[] = [
     ],
   },
   {
-    id: "sales",
-    title: "Central de Vendas",
+    id: "site_address",
+    title: "Endereço do Empreendimento",
     description:
-      "Endereço e mapa exibidos nas páginas internas e na home. Use o campo de embed do Google Maps para um mapa preciso.",
+      "Endereço físico do condomínio Wölfegarten. Usado em SEO local, rodapé e página de localização.",
+    fields: [
+      { key: "site.address", label: "Endereço completo", kind: "textarea", hint: "Rua, número, bairro, cidade/UF" },
+      { key: "site.map_embed", label: "URL de embed do Google Maps (opcional)", kind: "url" },
+    ],
+  },
+  {
+    id: "sales",
+    title: "Central de Vendas (primeiro destino do cliente)",
+    description:
+      "Endereço para onde os clientes serão direcionados primeiro. Aparece nas páginas internas e na home.",
     fields: [
       { key: "sales.label", label: "Nome exibido", hint: "Ex.: Central de Vendas Wölfegarten" },
       { key: "sales.address", label: "Endereço completo", kind: "textarea", hint: "Ex.: Rua das Palmeiras, 123 — Centro, Indaial/SC" },
