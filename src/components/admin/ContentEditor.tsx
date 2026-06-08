@@ -28,133 +28,6 @@ export interface ContentSection {
   fields: ContentField[];
 }
 
-export const SECTIONS: ContentSection[] = [
-  {
-    id: "seo",
-    title: "SEO & Compartilhamento",
-    description: "Como o site aparece no Google e em redes sociais.",
-    fields: [
-      { key: "seo.title", label: "Título da página (title)" },
-      { key: "seo.description", label: "Meta descrição", kind: "textarea" },
-      { key: "seo.og_title", label: "Título ao compartilhar (og:title)" },
-      { key: "seo.og_description", label: "Descrição ao compartilhar", kind: "textarea" },
-    ],
-  },
-  {
-    id: "navbar",
-    title: "Menu / Topo",
-    fields: [{ key: "navbar.cta", label: "Texto do botão do topo" }],
-  },
-  {
-    id: "hero",
-    title: "Hero (capa)",
-    description: "Imagem ou vídeo cinematográfico de fundo. Mídia editável na aba Mídia ou pelos campos de URL abaixo.",
-    fields: [
-      { key: "hero.eyebrow", label: "Etiqueta superior" },
-      { key: "hero.kicker", label: "Subtítulo pequeno" },
-      { key: "hero.title_line1", label: "Título — linha 1" },
-      { key: "hero.title_line2", label: "Título — linha 2 (destaque dourado)" },
-      { key: "hero.subtitle", label: "Subtítulo (use Enter para nova linha)", kind: "textarea" },
-      { key: "hero.cta", label: "Texto do botão" },
-      { key: "hero.video_url", label: "Vídeo (desktop)", kind: "media", mediaKinds: ["video"], hint: "Selecione um vídeo da biblioteca ou deixe vazio para usar imagem." },
-      { key: "hero.video_url_mobile", label: "Vídeo (mobile, opcional)", kind: "media", mediaKinds: ["video"] },
-      { key: "hero.video_poster", label: "Poster / imagem de fundo", kind: "media", mediaKinds: ["image"], hint: "Aparece antes do vídeo carregar e como fallback." },
-      { key: "hero.video_autoplay", label: "Autoplay (true / false)" },
-      { key: "hero.video_loop", label: "Loop infinito (true / false)" },
-    ],
-  },
-  {
-    id: "countdown",
-    title: "Contador regressivo",
-    fields: [
-      { key: "countdown.eyebrow", label: "Etiqueta" },
-      { key: "countdown.title", label: "Título" },
-      { key: "countdown.target_date", label: "Data alvo (ISO)", kind: "datetime", hint: "Ex.: 2026-05-16T10:00:00-03:00" },
-    ],
-  },
-  {
-    id: "marco",
-    title: "Seção 'Um novo marco'",
-    fields: [
-      { key: "marco.eyebrow", label: "Etiqueta" },
-      { key: "marco.title", label: "Título", kind: "textarea" },
-      { key: "marco.p1", label: "Parágrafo 1", kind: "textarea" },
-      { key: "marco.p2", label: "Parágrafo 2", kind: "textarea" },
-      { key: "marco.quote", label: "Citação final", kind: "textarea" },
-    ],
-  },
-  {
-    id: "experience",
-    title: "Seção 'A Experiência'",
-    fields: [
-      { key: "experience.eyebrow", label: "Etiqueta" },
-      { key: "experience.title", label: "Título", kind: "textarea" },
-      { key: "experience.item1_title", label: "Item 1 — Título" },
-      { key: "experience.item1_text", label: "Item 1 — Texto", kind: "textarea" },
-      { key: "experience.item2_title", label: "Item 2 — Título" },
-      { key: "experience.item2_text", label: "Item 2 — Texto", kind: "textarea" },
-      { key: "experience.item3_title", label: "Item 3 — Título" },
-      { key: "experience.item3_text", label: "Item 3 — Texto", kind: "textarea" },
-      { key: "experience.item4_title", label: "Item 4 — Título" },
-      { key: "experience.item4_text", label: "Item 4 — Texto", kind: "textarea" },
-    ],
-  },
-  {
-    id: "info",
-    title: "Seção Informações (Local / Data / Horário)",
-    fields: [
-      { key: "info.eyebrow", label: "Etiqueta" },
-      { key: "info.local_title", label: "Local — Título" },
-      { key: "info.local_sub", label: "Local — Endereço", kind: "textarea" },
-      { key: "info.date_title", label: "Data — Título" },
-      { key: "info.date_sub", label: "Data — Subtítulo" },
-      { key: "info.time_title", label: "Horário — Título" },
-      { key: "info.time_sub", label: "Horário — Subtítulo" },
-    ],
-  },
-  {
-    id: "vagas",
-    title: "Seção 'Vagas Limitadas'",
-    fields: [
-      { key: "vagas.badge", label: "Selo" },
-      { key: "vagas.title", label: "Título", kind: "textarea" },
-      { key: "vagas.sub", label: "Subtítulo" },
-    ],
-  },
-  {
-    id: "visit",
-    title: "Formulário de Agendamento de Visita",
-    description: "Substitui o antigo formulário de confirmação de presença.",
-    fields: [
-      { key: "visit.eyebrow", label: "Etiqueta" },
-      { key: "visit.title", label: "Título" },
-      { key: "visit.subtitle", label: "Subtítulo", kind: "textarea" },
-      { key: "visit.cta", label: "Texto do botão" },
-      { key: "visit.contact_name", label: "Nome do contato" },
-      { key: "visit.contact_phone_display", label: "Telefone exibido" },
-    ],
-  },
-  ...buildInternalPageSections(),
-  {
-    id: "contact",
-    title: "Contato & Redes Sociais",
-    fields: [
-      { key: "contact.whatsapp", label: "WhatsApp (somente números, com DDI)", kind: "tel", hint: "Ex.: 5547988178508" },
-      { key: "contact.instagram", label: "Instagram (URL completa)", kind: "url" },
-      { key: "contact.facebook", label: "Facebook (URL completa)", kind: "url" },
-    ],
-  },
-  {
-    id: "footer",
-    title: "Rodapé",
-    fields: [
-      { key: "footer.realizacao_label", label: "Etiqueta acima das logos" },
-      { key: "footer.city", label: "Cidade / Estado" },
-      { key: "footer.phone", label: "Telefone exibido" },
-    ],
-  },
-];
-
 const INTERNAL_PAGES: { slug: string; label: string }[] = [
   { slug: "empreendimento", label: "O Empreendimento" },
   { slug: "infraestrutura", label: "Infraestrutura" },
@@ -190,6 +63,74 @@ function buildInternalPageSections(): ContentSection[] {
     ],
   }));
 }
+
+export const SECTIONS: ContentSection[] = [
+  {
+    id: "seo",
+    title: "SEO & Compartilhamento",
+    description: "Como o site aparece no Google e em redes sociais.",
+    fields: [
+      { key: "seo.title", label: "Título da página (title)" },
+      { key: "seo.description", label: "Meta descrição", kind: "textarea" },
+      { key: "seo.og_title", label: "Título ao compartilhar (og:title)" },
+      { key: "seo.og_description", label: "Descrição ao compartilhar", kind: "textarea" },
+    ],
+  },
+  {
+    id: "navbar",
+    title: "Menu / Topo",
+    fields: [{ key: "navbar.cta", label: "Texto do botão do topo" }],
+  },
+  {
+    id: "hero",
+    title: "Hero (capa)",
+    description: "Imagem ou vídeo cinematográfico de fundo da home.",
+    fields: [
+      { key: "hero.eyebrow", label: "Etiqueta superior" },
+      { key: "hero.kicker", label: "Subtítulo pequeno" },
+      { key: "hero.title_line1", label: "Título — linha 1" },
+      { key: "hero.title_line2", label: "Título — linha 2 (destaque dourado)" },
+      { key: "hero.subtitle", label: "Subtítulo (use Enter para nova linha)", kind: "textarea" },
+      { key: "hero.cta", label: "Texto do botão" },
+      { key: "hero.video_url", label: "Vídeo (desktop)", kind: "media", mediaKinds: ["video"], hint: "Selecione um vídeo da biblioteca ou deixe vazio para usar imagem." },
+      { key: "hero.video_url_mobile", label: "Vídeo (mobile, opcional)", kind: "media", mediaKinds: ["video"] },
+      { key: "hero.video_poster", label: "Poster / imagem de fundo", kind: "media", mediaKinds: ["image"], hint: "Aparece antes do vídeo carregar e como fallback." },
+      { key: "hero.video_autoplay", label: "Autoplay (true / false)" },
+      { key: "hero.video_loop", label: "Loop infinito (true / false)" },
+    ],
+  },
+  {
+    id: "visit",
+    title: "Formulário de Agendamento de Visita",
+    fields: [
+      { key: "visit.eyebrow", label: "Etiqueta" },
+      { key: "visit.title", label: "Título" },
+      { key: "visit.subtitle", label: "Subtítulo", kind: "textarea" },
+      { key: "visit.cta", label: "Texto do botão" },
+      { key: "visit.contact_name", label: "Nome do contato" },
+      { key: "visit.contact_phone_display", label: "Telefone exibido" },
+    ],
+  },
+  ...buildInternalPageSections(),
+  {
+    id: "contact",
+    title: "Contato & Redes Sociais",
+    fields: [
+      { key: "contact.whatsapp", label: "WhatsApp (somente números, com DDI)", kind: "tel", hint: "Ex.: 5547988178508" },
+      { key: "contact.instagram", label: "Instagram (URL completa)", kind: "url" },
+      { key: "contact.facebook", label: "Facebook (URL completa)", kind: "url" },
+    ],
+  },
+  {
+    id: "footer",
+    title: "Rodapé",
+    fields: [
+      { key: "footer.realizacao_label", label: "Etiqueta acima das logos" },
+      { key: "footer.city", label: "Cidade / Estado" },
+      { key: "footer.phone", label: "Telefone exibido" },
+    ],
+  },
+];
 
 export function ContentEditor() {
   const { data, isLoading } = useSiteContent();
