@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteContent } from "@/hooks/use-site-content";
 import { MediaPicker } from "@/components/admin/MediaPicker";
+import { LivePreview } from "@/components/admin/LivePreview";
 import type { MediaKind } from "@/hooks/use-media-library";
 
 type FieldKind = "text" | "textarea" | "url" | "datetime" | "tel" | "media";
@@ -14,17 +15,12 @@ export interface ContentField {
   mediaKinds?: MediaKind[];
 }
 
-export interface ContentField {
-  key: string;
-  label: string;
-  kind?: FieldKind;
-  hint?: string;
-}
-
 export interface ContentSection {
   id: string;
   title: string;
   description?: string;
+  group: "Home" | "Páginas" | "Geral";
+  previewPath: string;
   fields: ContentField[];
 }
 
@@ -44,22 +40,24 @@ const INTERNAL_PAGES: { slug: string; label: string }[] = [
 function buildInternalPageSections(): ContentSection[] {
   return INTERNAL_PAGES.map(({ slug, label }) => ({
     id: `page-${slug}`,
-    title: `Página: ${label}`,
-    description: `Edite todos os textos, imagens, galeria e vídeos da página /${slug}.`,
+    title: label,
+    description: `Edite tudo da página /${slug}: textos, imagens, galeria e vídeos.`,
+    group: "Páginas" as const,
+    previewPath: `/${slug}`,
     fields: [
-      { key: `page.${slug}.eyebrow`, label: "Etiqueta superior" },
-      { key: `page.${slug}.title`, label: "Título da página" },
-      { key: `page.${slug}.subtitle`, label: "Subtítulo", kind: "textarea" },
-      { key: `page.${slug}.hero_image`, label: "Imagem do hero", kind: "media", mediaKinds: ["image"] },
-      { key: `page.${slug}.intro`, label: "Texto de abertura", kind: "textarea" },
-      { key: `page.${slug}.content`, label: "Conteúdo completo", kind: "textarea", hint: "Use Enter para parágrafos." },
-      { key: `page.${slug}.gallery_tag`, label: "Tag da galeria", hint: `Padrão: ${slug}. Marque as imagens com esta tag na biblioteca de mídia.` },
-      { key: `page.${slug}.videos_tag`, label: "Tag dos vídeos", hint: `Padrão: ${slug}.` },
-      { key: `page.${slug}.cta_title`, label: "CTA — Título" },
+      { key: `page.${slug}.eyebrow`, label: "Etiqueta superior", hint: "Pequeno texto acima do título do hero." },
+      { key: `page.${slug}.title`, label: "Título da página", hint: "Título principal exibido no hero." },
+      { key: `page.${slug}.subtitle`, label: "Subtítulo", kind: "textarea", hint: "Frase de apoio logo abaixo do título." },
+      { key: `page.${slug}.hero_image`, label: "Imagem do hero", kind: "media", mediaKinds: ["image"], hint: "Imagem cinematográfica de fundo do topo da página." },
+      { key: `page.${slug}.intro`, label: "Texto de abertura", kind: "textarea", hint: "Aparece logo após o hero, em destaque." },
+      { key: `page.${slug}.content`, label: "Conteúdo completo", kind: "textarea", hint: "Texto corrido da página. Use Enter para separar parágrafos." },
+      { key: `page.${slug}.gallery_tag`, label: "Tag da galeria", hint: `Padrão: "${slug}". Marque as imagens com esta tag na Mídia para aparecerem aqui.` },
+      { key: `page.${slug}.videos_tag`, label: "Tag dos vídeos", hint: `Padrão: "${slug}". Marque os vídeos com esta tag na Mídia.` },
+      { key: `page.${slug}.cta_title`, label: "CTA — Título", hint: "Bloco de chamada antes do formulário." },
       { key: `page.${slug}.cta_subtitle`, label: "CTA — Subtítulo", kind: "textarea" },
       { key: `page.${slug}.cta_label`, label: "CTA — Texto do botão" },
-      { key: `page.${slug}.seo_title`, label: "SEO — Title" },
-      { key: `page.${slug}.seo_description`, label: "SEO — Meta description", kind: "textarea" },
+      { key: `page.${slug}.seo_title`, label: "SEO — Title", hint: "Aparece na aba do navegador e no Google." },
+      { key: `page.${slug}.seo_description`, label: "SEO — Meta description", kind: "textarea", hint: "Resumo curto exibido nos resultados de busca." },
     ],
   }));
 }
@@ -69,45 +67,55 @@ export const SECTIONS: ContentSection[] = [
     id: "seo",
     title: "SEO & Compartilhamento",
     description: "Como o site aparece no Google e em redes sociais.",
+    group: "Geral",
+    previewPath: "/",
     fields: [
-      { key: "seo.title", label: "Título da página (title)" },
-      { key: "seo.description", label: "Meta descrição", kind: "textarea" },
-      { key: "seo.og_title", label: "Título ao compartilhar (og:title)" },
+      { key: "seo.title", label: "Título da página (title)", hint: "Aparece na aba do navegador e no Google." },
+      { key: "seo.description", label: "Meta descrição", kind: "textarea", hint: "Resumo de 1–2 linhas exibido nos buscadores." },
+      { key: "seo.og_title", label: "Título ao compartilhar (og:title)", hint: "Usado no WhatsApp, Facebook, LinkedIn." },
       { key: "seo.og_description", label: "Descrição ao compartilhar", kind: "textarea" },
     ],
   },
   {
     id: "navbar",
     title: "Menu / Topo",
-    fields: [{ key: "navbar.cta", label: "Texto do botão do topo" }],
+    description: "Barra superior fixa do site.",
+    group: "Home",
+    previewPath: "/",
+    fields: [{ key: "navbar.cta", label: "Texto do botão do topo", hint: "Ex.: AGENDAR VISITA" }],
   },
   {
     id: "hero",
-    title: "Hero (capa)",
-    description: "Imagem ou vídeo cinematográfico de fundo da home.",
+    title: "Hero (capa da home)",
+    description: "Primeira tela do site — vídeo ou imagem cinematográfica.",
+    group: "Home",
+    previewPath: "/",
     fields: [
-      { key: "hero.eyebrow", label: "Etiqueta superior" },
+      { key: "hero.eyebrow", label: "Etiqueta superior", hint: "Pequeno texto acima do título." },
       { key: "hero.kicker", label: "Subtítulo pequeno" },
       { key: "hero.title_line1", label: "Título — linha 1" },
       { key: "hero.title_line2", label: "Título — linha 2 (destaque dourado)" },
-      { key: "hero.subtitle", label: "Subtítulo (use Enter para nova linha)", kind: "textarea" },
+      { key: "hero.subtitle", label: "Subtítulo", kind: "textarea", hint: "Use Enter para nova linha." },
       { key: "hero.cta", label: "Texto do botão" },
-      { key: "hero.video_url", label: "Vídeo (desktop)", kind: "media", mediaKinds: ["video"], hint: "Selecione um vídeo da biblioteca ou deixe vazio para usar imagem." },
-      { key: "hero.video_url_mobile", label: "Vídeo (mobile, opcional)", kind: "media", mediaKinds: ["video"] },
+      { key: "hero.video_url", label: "Vídeo (desktop)", kind: "media", mediaKinds: ["video"], hint: "Vídeo cinematográfico de fundo. Deixe vazio para usar imagem." },
+      { key: "hero.video_url_mobile", label: "Vídeo (mobile, opcional)", kind: "media", mediaKinds: ["video"], hint: "Versão otimizada para celular." },
       { key: "hero.video_poster", label: "Poster / imagem de fundo", kind: "media", mediaKinds: ["image"], hint: "Aparece antes do vídeo carregar e como fallback." },
-      { key: "hero.video_autoplay", label: "Autoplay (true / false)" },
-      { key: "hero.video_loop", label: "Loop infinito (true / false)" },
+      { key: "hero.video_autoplay", label: "Autoplay", hint: 'Digite "true" ou "false".' },
+      { key: "hero.video_loop", label: "Loop infinito", hint: 'Digite "true" ou "false".' },
     ],
   },
   {
     id: "visit",
     title: "Formulário de Agendamento de Visita",
+    description: "Bloco de captura de leads — agendamento de visita à central de vendas.",
+    group: "Home",
+    previewPath: "/",
     fields: [
       { key: "visit.eyebrow", label: "Etiqueta" },
       { key: "visit.title", label: "Título" },
       { key: "visit.subtitle", label: "Subtítulo", kind: "textarea" },
       { key: "visit.cta", label: "Texto do botão" },
-      { key: "visit.contact_name", label: "Nome do contato" },
+      { key: "visit.contact_name", label: "Nome do contato", hint: "Pessoa responsável exibida abaixo do formulário." },
       { key: "visit.contact_phone_display", label: "Telefone exibido" },
     ],
   },
@@ -115,6 +123,9 @@ export const SECTIONS: ContentSection[] = [
   {
     id: "contact",
     title: "Contato & Redes Sociais",
+    description: "Usado em todo o site (WhatsApp flutuante, rodapé, links sociais).",
+    group: "Geral",
+    previewPath: "/",
     fields: [
       { key: "contact.whatsapp", label: "WhatsApp (somente números, com DDI)", kind: "tel", hint: "Ex.: 5547988178508" },
       { key: "contact.instagram", label: "Instagram (URL completa)", kind: "url" },
@@ -124,6 +135,9 @@ export const SECTIONS: ContentSection[] = [
   {
     id: "footer",
     title: "Rodapé",
+    description: "Aparece no final de todas as páginas.",
+    group: "Geral",
+    previewPath: "/",
     fields: [
       { key: "footer.realizacao_label", label: "Etiqueta acima das logos" },
       { key: "footer.city", label: "Cidade / Estado" },
@@ -132,49 +146,87 @@ export const SECTIONS: ContentSection[] = [
   },
 ];
 
+const GROUP_ORDER: ContentSection["group"][] = ["Home", "Páginas", "Geral"];
+
 export function ContentEditor() {
   const { data, isLoading } = useSiteContent();
-  const [openId, setOpenId] = useState<string>("hero");
+  const [activeId, setActiveId] = useState<string>("hero");
+
+  const grouped = useMemo(() => {
+    const g: Record<string, ContentSection[]> = {};
+    for (const s of SECTIONS) {
+      (g[s.group] = g[s.group] ?? []).push(s);
+    }
+    return g;
+  }, []);
+
+  const active = SECTIONS.find((s) => s.id === activeId) ?? SECTIONS[0];
 
   if (isLoading) return <p className="text-sm text-muted-foreground">Carregando...</p>;
 
   return (
     <div>
-      <div className="mb-8">
+      <div className="mb-6">
         <h2 className="font-serif text-3xl text-offwhite">Editar Site</h2>
         <p className="mt-1 text-xs text-muted-foreground">
-          Toda alteração é salva automaticamente e atualiza o site em tempo real.
+          Selecione uma seção à esquerda, edite os campos no centro e acompanhe o resultado em tempo real à direita.
         </p>
       </div>
 
-      <div className="space-y-3">
-        {SECTIONS.map((s) => (
-          <div key={s.id} className="overflow-hidden rounded border border-border">
-            <button
-              onClick={() => setOpenId(openId === s.id ? "" : s.id)}
-              className="flex w-full items-center justify-between bg-card px-5 py-4 text-left transition-colors hover:bg-card/70"
-            >
-              <div>
-                <div className="text-sm text-offwhite">{s.title}</div>
-                {s.description && (
-                  <div className="mt-1 text-[11px] text-muted-foreground">{s.description}</div>
-                )}
+      <div className="grid gap-5 lg:grid-cols-[220px_minmax(0,1fr)_minmax(0,1.1fr)]">
+        {/* Sidebar de seções */}
+        <aside className="lg:sticky lg:top-6 lg:h-[calc(100vh-160px)] lg:overflow-y-auto">
+          <nav className="space-y-5 pr-1">
+            {GROUP_ORDER.map((group) => (
+              <div key={group}>
+                <div className="mb-2 text-[10px] tracking-luxe text-gold/70">{group.toUpperCase()}</div>
+                <ul className="space-y-1">
+                  {(grouped[group] ?? []).map((s) => (
+                    <li key={s.id}>
+                      <button
+                        onClick={() => setActiveId(s.id)}
+                        className={`w-full rounded px-3 py-2 text-left text-xs transition-colors ${
+                          activeId === s.id
+                            ? "bg-gold/10 text-gold"
+                            : "text-muted-foreground hover:bg-card hover:text-offwhite"
+                        }`}
+                      >
+                        {s.title}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <span className="text-gold">{openId === s.id ? "−" : "+"}</span>
-            </button>
-            {openId === s.id && (
-              <div className="space-y-5 border-t border-border bg-background/50 p-5">
-                {s.fields.map((f) => (
-                  <FieldRow
-                    key={f.key}
-                    field={f}
-                    value={typeof data?.[f.key] === "string" ? (data[f.key] as string) : ""}
-                  />
-                ))}
-              </div>
+            ))}
+          </nav>
+        </aside>
+
+        {/* Editor de campos */}
+        <section className="min-w-0">
+          <div className="mb-5 rounded border border-border bg-card/40 p-4">
+            <div className="text-sm text-offwhite">{active.title}</div>
+            {active.description && (
+              <p className="mt-1 text-[11px] text-muted-foreground">{active.description}</p>
             )}
+            <div className="mt-2 text-[10px] tracking-luxe text-muted-foreground/70">
+              Visualizando: <span className="text-gold/80">{active.previewPath}</span>
+            </div>
           </div>
-        ))}
+          <div className="space-y-5">
+            {active.fields.map((f) => (
+              <FieldRow
+                key={f.key}
+                field={f}
+                value={typeof data?.[f.key] === "string" ? (data[f.key] as string) : ""}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Preview ao vivo */}
+        <aside className="hidden lg:block">
+          <LivePreview path={active.previewPath} heightOffset={220} />
+        </aside>
       </div>
     </div>
   );
@@ -187,7 +239,6 @@ export function FieldRow({ field, value }: { field: ContentField; value: string 
   const lastSaved = useRef(value);
 
   useEffect(() => {
-    // Sincroniza se vier mudança via realtime (ex.: outro usuário)
     if (value !== lastSaved.current) {
       setVal(value);
       lastSaved.current = value;
@@ -239,7 +290,7 @@ export function FieldRow({ field, value }: { field: ContentField; value: string 
         />
       ) : (
         <input
-          type={kind === "url" ? "url" : kind === "tel" ? "tel" : kind === "datetime" ? "text" : "text"}
+          type={kind === "url" ? "url" : kind === "tel" ? "tel" : "text"}
           value={val}
           onChange={(e) => onChange(e.target.value)}
           className="mt-2 w-full rounded border border-border bg-background px-3 py-2 text-sm text-offwhite outline-none focus:border-gold"
