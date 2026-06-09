@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Search, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteContent } from "@/hooks/use-site-content";
 import { MediaPicker } from "@/components/admin/MediaPicker";
 import { LivePreview } from "@/components/admin/LivePreview";
 import type { MediaKind } from "@/hooks/use-media-library";
+
 
 type FieldKind = "text" | "textarea" | "url" | "datetime" | "tel" | "media";
 
