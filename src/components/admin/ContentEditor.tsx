@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Search, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteContent } from "@/hooks/use-site-content";
 import { MediaPicker } from "@/components/admin/MediaPicker";
 import { LivePreview } from "@/components/admin/LivePreview";
 import type { MediaKind } from "@/hooks/use-media-library";
+
 
 type FieldKind = "text" | "textarea" | "url" | "datetime" | "tel" | "media";
 
@@ -151,14 +153,35 @@ const GROUP_ORDER: ContentSection["group"][] = ["Home", "Páginas", "Geral"];
 export function ContentEditor() {
   const { data, isLoading } = useSiteContent();
   const [activeId, setActiveId] = useState<string>("hero");
+  const [search, setSearch] = useState("");
+  const [activeFilter, setActiveFilter] = useState<"Todas" | ContentSection["group"]>("Todas");
+
+  const normalizedSearch = search.trim().toLowerCase();
+
+  const filteredSections = useMemo(() => {
+    if (!normalizedSearch && activeFilter === "Todas") return SECTIONS;
+    return SECTIONS.filter((s) => {
+      const matchesGroup = activeFilter === "Todas" || s.group === activeFilter;
+      if (!normalizedSearch) return matchesGroup;
+      const inTitle = s.title.toLowerCase().includes(normalizedSearch);
+      const inDesc = (s.description ?? "").toLowerCase().includes(normalizedSearch);
+      const inFields = s.fields.some(
+        (f) =>
+          f.label.toLowerCase().includes(normalizedSearch) ||
+          (f.hint ?? "").toLowerCase().includes(normalizedSearch) ||
+          f.key.toLowerCase().includes(normalizedSearch)
+      );
+      return matchesGroup && (inTitle || inDesc || inFields);
+    });
+  }, [normalizedSearch, activeFilter]);
 
   const grouped = useMemo(() => {
     const g: Record<string, ContentSection[]> = {};
-    for (const s of SECTIONS) {
+    for (const s of filteredSections) {
       (g[s.group] = g[s.group] ?? []).push(s);
     }
     return g;
-  }, []);
+  }, [filteredSections]);
 
   const active = SECTIONS.find((s) => s.id === activeId) ?? SECTIONS[0];
 
@@ -173,32 +196,98 @@ export function ContentEditor() {
         </p>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[220px_minmax(0,1fr)_minmax(0,1.1fr)]">
-        {/* Sidebar de seções */}
+      <div className="grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)_minmax(0,1.1fr)]">
+        {/* Sidebar de seções com busca e filtros */}
         <aside className="lg:sticky lg:top-6 lg:h-[calc(100vh-160px)] lg:overflow-y-auto">
-          <nav className="space-y-5 pr-1">
-            {GROUP_ORDER.map((group) => (
-              <div key={group}>
-                <div className="mb-2 text-[10px] tracking-luxe text-gold/70">{group.toUpperCase()}</div>
-                <ul className="space-y-1">
-                  {(grouped[group] ?? []).map((s) => (
-                    <li key={s.id}>
-                      <button
-                        onClick={() => setActiveId(s.id)}
-                        className={`w-full rounded px-3 py-2 text-left text-xs transition-colors ${
-                          activeId === s.id
-                            ? "bg-gold/10 text-gold"
-                            : "text-muted-foreground hover:bg-card hover:text-offwhite"
-                        }`}
-                      >
-                        {s.title}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          {/* Busca */}
+          <div className="relative mb-3">
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar seção, campo..."
+              className="w-full rounded border border-border bg-background py-2 pl-8 pr-8 text-xs text-offwhite outline-none focus:border-gold"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-offwhite"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Filtros por grupo */}
+          <div className="mb-4 flex flex-wrap gap-1.5">
+            {(["Todas", "Home", "Páginas", "Geral"] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setActiveFilter(f)}
+                className={`rounded px-2 py-1 text-[10px] tracking-luxe transition-colors ${
+                  activeFilter === f
+                    ? "bg-gold/20 text-gold"
+                    : "border border-border text-muted-foreground hover:text-offwhite"
+                }`}
+              >
+                {f === "Todas" ? "TODAS" : f.toUpperCase()}
+                {f !== "Todas" && (
+                  <span className="ml-1 opacity-70">({grouped[f]?.length ?? 0})</span>
+                )}
+              </button>
             ))}
-          </nav>
+          </div>
+
+          {/* Resultados */}
+          {filteredSections.length === 0 ? (
+            <p className="py-6 text-center text-[11px] text-muted-foreground">
+              Nenhuma seção encontrada.
+            </p>
+          ) : (
+            <nav className="space-y-5 pr-1">
+              {GROUP_ORDER.map((group) => {
+                const items = grouped[group] ?? [];
+                if (items.length === 0) return null;
+                return (
+                  <div key={group}>
+                    <div className="mb-2 text-[10px] tracking-luxe text-gold/70">{group.toUpperCase()}</div>
+                    <ul className="space-y-1">
+                      {items.map((s) => (
+                        <li key={s.id}>
+                          <button
+                            onClick={() => setActiveId(s.id)}
+                            className={`w-full rounded px-3 py-2 text-left text-xs transition-colors ${
+                              activeId === s.id
+                                ? "bg-gold/10 text-gold"
+                                : "text-muted-foreground hover:bg-card hover:text-offwhite"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="truncate">{highlightMatch(s.title, normalizedSearch)}</span>
+                              {activeId === s.id && (
+                                <span className="ml-1.5 inline-block h-1 w-1 rounded-full bg-gold" />
+                              )}
+                            </div>
+                            {s.description && (
+                              <p className="mt-0.5 truncate text-[10px] text-muted-foreground/70">
+                                {highlightMatch(s.description, normalizedSearch)}
+                              </p>
+                            )}
+                            {normalizedSearch && getMatchingFieldLabels(s, normalizedSearch).length > 0 && (
+                              <p className="mt-1 text-[9px] text-gold/70">
+                                Campos: {getMatchingFieldLabels(s, normalizedSearch).join(", ")}
+                              </p>
+                            )}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
+            </nav>
+          )}
         </aside>
 
         {/* Editor de campos */}
@@ -230,6 +319,36 @@ export function ContentEditor() {
       </div>
     </div>
   );
+}
+
+function highlightMatch(text: string, query: string) {
+  if (!query) return text;
+  const parts = text.split(new RegExp(`(${escapeRegExp(query)})`, "gi"));
+  return parts.map((part, i) =>
+    part.toLowerCase() === query.toLowerCase() ? (
+      <mark key={i} className="rounded bg-gold/30 px-0.5 text-offwhite">
+        {part}
+      </mark>
+    ) : (
+      <span key={i}>{part}</span>
+    )
+  );
+}
+
+function escapeRegExp(str: string) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function getMatchingFieldLabels(section: ContentSection, query: string) {
+  return section.fields
+    .filter(
+      (f) =>
+        f.label.toLowerCase().includes(query) ||
+        (f.hint ?? "").toLowerCase().includes(query) ||
+        f.key.toLowerCase().includes(query)
+    )
+    .map((f) => f.label)
+    .slice(0, 3);
 }
 
 export function FieldRow({ field, value }: { field: ContentField; value: string }) {
