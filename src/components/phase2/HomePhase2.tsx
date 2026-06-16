@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { useText } from "@/hooks/use-site-content";
 import { useSiteAsset } from "@/hooks/use-site-asset";
@@ -11,6 +12,7 @@ import { VideoPlaybackProvider } from "@/components/phase2/VideoPlaybackContext"
 import { VisitForm } from "@/components/phase2/VisitForm";
 import { SalesMap } from "@/components/phase2/SalesMap";
 import { WhatsAppFAB } from "@/components/phase2/WhatsAppFAB";
+import { optimizeImageUrl, srcSet, fallbackToOriginal } from "@/lib/img-url";
 
 function inferType(url: string): string | undefined {
   const u = url.toLowerCase().split("?")[0];
@@ -56,14 +58,33 @@ function HeroSection() {
   const fallback = useSiteAsset("hero", heroFallback);
   const img = customImg || fallback;
 
+  // Preload da imagem do hero (LCP) assim que a URL estiver disponível
+  useEffect(() => {
+    if (!img) return;
+    const href = optimizeImageUrl(img, { width: 1920, quality: 75 });
+    const l = document.createElement("link");
+    l.rel = "preload";
+    l.as = "image";
+    l.href = href;
+    l.setAttribute("fetchpriority", "high");
+    document.head.appendChild(l);
+    return () => {
+      l.remove();
+    };
+  }, [img]);
+
   return (
     <section className="relative h-[92svh] min-h-[640px] w-full overflow-hidden">
       <img
-        src={img}
+        src={optimizeImageUrl(img, { width: 1920, quality: 75 })}
+        srcSet={srcSet(img, [768, 1280, 1920], 75)}
+        sizes="100vw"
+        onError={fallbackToOriginal(img)}
         alt="Empreendimento Wölfegarten"
         className="absolute inset-0 h-full w-full object-cover animate-kenburns"
         loading="eager"
         fetchPriority="high"
+        decoding="async"
       />
       <div className="absolute inset-0 pointer-events-none" style={{ background: "var(--gradient-hero)" }} />
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_50%_30%,oklch(0.18_0.025_155/0.2),oklch(0.1_0.02_155/0.95))]" />
@@ -254,7 +275,16 @@ function MasterplanSection() {
         <p className="mx-auto max-w-2xl text-base leading-relaxed text-offwhite/80">{text}</p>
         {img && (
           <div className="mt-12 overflow-hidden rounded-sm border border-border">
-            <img src={img} alt={title} className="h-auto w-full" />
+            <img
+              src={optimizeImageUrl(img, { width: 1600, quality: 78 })}
+              srcSet={srcSet(img, [768, 1280, 1600], 78)}
+              sizes="(max-width: 1024px) 100vw, 1100px"
+              onError={fallbackToOriginal(img)}
+              alt={title}
+              loading="lazy"
+              decoding="async"
+              className="h-auto w-full"
+            />
           </div>
         )}
       </div>

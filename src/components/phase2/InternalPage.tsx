@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { useText } from "@/hooks/use-site-content";
 import { Navbar } from "@/components/Navbar";
@@ -8,6 +9,7 @@ import { VideoPlaybackProvider } from "@/components/phase2/VideoPlaybackContext"
 import { VisitForm } from "@/components/phase2/VisitForm";
 import { SalesMap } from "@/components/phase2/SalesMap";
 import { WhatsAppFAB } from "@/components/phase2/WhatsAppFAB";
+import { optimizeImageUrl, srcSet, fallbackToOriginal } from "@/lib/img-url";
 
 interface Props {
   /** slug curto da página — usado nas chaves do CMS e tags da galeria por padrão. */
@@ -51,6 +53,21 @@ export function InternalPage({
   );
   const ctaLabel = useText(`page.${slug}.cta_label`, "Agendar Visita");
 
+  // Preload LCP image
+  useEffect(() => {
+    if (!heroImg) return;
+    const href = optimizeImageUrl(heroImg, { width: 1920, quality: 75 });
+    const l = document.createElement("link");
+    l.rel = "preload";
+    l.as = "image";
+    l.href = href;
+    l.setAttribute("fetchpriority", "high");
+    document.head.appendChild(l);
+    return () => {
+      l.remove();
+    };
+  }, [heroImg]);
+
   return (
     <VideoPlaybackProvider>
       <Navbar />
@@ -59,11 +76,15 @@ export function InternalPage({
         <section className="relative h-[70svh] min-h-[460px] w-full overflow-hidden">
           {heroImg ? (
             <img
-              src={heroImg}
+              src={optimizeImageUrl(heroImg, { width: 1920, quality: 75 })}
+              srcSet={srcSet(heroImg, [768, 1280, 1920], 75)}
+              sizes="100vw"
+              onError={fallbackToOriginal(heroImg)}
               alt={title}
               className="absolute inset-0 h-full w-full object-cover"
               loading="eager"
               fetchPriority="high"
+              decoding="async"
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-b from-card to-background" />

@@ -1,5 +1,6 @@
 import { useText } from "@/hooks/use-site-content";
 import { SmartVideo, type SmartVideoSource } from "@/components/SmartVideo";
+import { optimizeImageUrl, srcSet, fallbackToOriginal } from "@/lib/img-url";
 
 function inferType(url: string): string | undefined {
   const u = url.toLowerCase().split("?")[0];
@@ -50,7 +51,10 @@ export function FlexibleMedia({ baseKey, fallbackImage, className = "", alt = ""
   }
   return (
     <img
-      src={src}
+      src={optimizeImageUrl(src, { width: 1280, quality: 78 })}
+      srcSet={srcSet(src, [640, 960, 1280, 1600], 78)}
+      sizes="(max-width: 768px) 100vw, 50vw"
+      onError={fallbackToOriginal(src)}
       alt={alt}
       loading="lazy"
       decoding="async"
