@@ -73,7 +73,7 @@ export function InternalPage({
       <Navbar />
       <main>
         {/* Hero */}
-        <section className="relative h-[70svh] min-h-[460px] w-full overflow-hidden">
+        <section className="relative h-[68svh] min-h-[420px] md:min-h-[520px] w-full overflow-hidden">
           {heroImg ? (
             <img
               src={optimizeImageUrl(heroImg, { width: 1920, quality: 75 })}
@@ -92,10 +92,10 @@ export function InternalPage({
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,oklch(0.14_0.02_155/0.55),oklch(0.1_0.02_155/0.92))]" />
           <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 pt-20 text-center">
             <div className="text-[10px] tracking-luxe text-gold">{eyebrow}</div>
-            <div className="my-6 h-px w-12 bg-gold/60" />
-            <h1 className="font-serif text-4xl font-light text-offwhite md:text-6xl">{title}</h1>
+            <div className="my-4 h-px w-10 bg-gold/60 md:my-6 md:w-12" />
+            <h1 className="font-serif text-3xl font-light leading-[1.08] text-offwhite md:text-6xl">{title}</h1>
             {subtitle && (
-              <p className="mt-6 max-w-xl text-sm font-light text-offwhite/80 md:text-base">
+              <p className="mt-4 max-w-xl text-[13px] font-light text-offwhite/80 md:mt-6 md:text-base">
                 {subtitle}
               </p>
             )}
@@ -104,8 +104,8 @@ export function InternalPage({
 
         {/* Intro + conteúdo */}
         {(intro || content) && (
-          <section className="bg-background py-16 md:py-24">
-            <div className="mx-auto max-w-3xl px-6">
+          <section className="bg-background py-10 md:py-20">
+            <div className="mx-auto max-w-3xl px-5 md:px-6">
               {intro && (
                 <p className="text-center font-serif text-xl font-light leading-relaxed text-offwhite/90 md:text-2xl">
                   {intro}
@@ -123,12 +123,12 @@ export function InternalPage({
 
         {/* Galeria */}
         {showGallery && (
-          <section className="bg-card/40 py-16 md:py-24">
+          <section className="bg-card/40 py-10 md:py-20">
             <div className={`mx-auto px-6 ${fullGallery ? "max-w-7xl" : "max-w-6xl"}`}>
               {!fullGallery && (
                 <div className="mb-10 text-center">
                   <div className="text-[10px] tracking-luxe text-gold">GALERIA</div>
-                  <h2 className="mt-3 font-serif text-2xl font-light text-offwhite md:text-3xl">
+                  <h2 className="mt-2 font-serif text-xl font-light text-offwhite md:text-3xl">
                     Imagens
                   </h2>
                 </div>
@@ -140,12 +140,12 @@ export function InternalPage({
 
         {/* Vídeos */}
         {showVideos && (
-          <section className="bg-background py-16 md:py-24">
+          <section className="bg-background py-10 md:py-20">
             <div className={`mx-auto px-6 ${fullVideos ? "max-w-7xl" : "max-w-6xl"}`}>
               {!fullVideos && (
                 <div className="mb-10 text-center">
                   <div className="text-[10px] tracking-luxe text-gold">VÍDEOS</div>
-                  <h2 className="mt-3 font-serif text-2xl font-light text-offwhite md:text-3xl">
+                  <h2 className="mt-2 font-serif text-xl font-light text-offwhite md:text-3xl">
                     Conheça em movimento
                   </h2>
                 </div>
@@ -156,11 +156,11 @@ export function InternalPage({
         )}
 
         {/* CTA Visita */}
-        <section className="bg-card/40 py-16 md:py-20">
-          <div className="mx-auto max-w-3xl px-6 text-center">
+        <section className="bg-card/40 py-10 md:py-16">
+          <div className="mx-auto max-w-3xl px-5 text-center md:px-6">
             <h2 className="font-serif text-3xl font-light text-offwhite md:text-4xl">{ctaTitle}</h2>
             <p className="mt-4 text-sm text-offwhite/70 md:text-base">{ctaSubtitle}</p>
-            <Link to="/contato" className="btn-luxe mt-8 inline-block">
+            <Link to="/contato" className="btn-luxe mt-6 inline-block md:mt-8">
               {ctaLabel}
             </Link>
           </div>

@@ -74,7 +74,7 @@ function HeroSection() {
   }, [img]);
 
   return (
-    <section className="relative h-[92svh] min-h-[640px] w-full overflow-hidden">
+    <section className="relative h-[88svh] min-h-[520px] md:min-h-[640px] w-full overflow-hidden">
       <img
         src={optimizeImageUrl(img, { width: 1920, quality: 75 })}
         srcSet={srcSet(img, [768, 1280, 1920], 75)}
@@ -91,18 +91,18 @@ function HeroSection() {
 
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
         <div className="text-[10px] tracking-luxe text-gold">{eyebrow}</div>
-        <div className="my-6 h-px w-12 bg-gold/60" />
-        <h1 className="font-serif text-5xl font-light text-offwhite md:text-7xl lg:text-8xl">
+        <div className="my-4 h-px w-10 bg-gold/60 md:my-6 md:w-12" />
+        <h1 className="font-serif text-4xl font-light leading-[1.05] text-offwhite md:text-7xl lg:text-8xl">
           {t1}
           <br />
           <span className="text-gold">{t2}</span>
         </h1>
         {sub && (
-          <p className="mt-10 max-w-md text-sm font-light leading-relaxed text-offwhite/80 md:text-base">
+          <p className="mt-6 max-w-md text-[13px] font-light leading-relaxed text-offwhite/80 md:mt-10 md:text-base">
             {sub}
           </p>
         )}
-        <Link to="/contato" className="btn-luxe mt-12">
+        <Link to="/contato" className="btn-luxe mt-8 md:mt-12">
           {cta}
         </Link>
       </div>
@@ -122,11 +122,11 @@ function VideoIntroSection() {
   const sources: SmartVideoSource[] = url ? [{ src: url, type: inferType(url) }] : [];
 
   return (
-    <section className="bg-background py-16 md:py-24">
-      <div className="mx-auto max-w-6xl px-6 text-center">
+    <section className="bg-background py-10 md:py-20">
+      <div className="mx-auto max-w-6xl px-5 text-center md:px-6">
         <div className="text-[10px] tracking-luxe text-gold">{eyebrow}</div>
-        <h2 className="mt-4 font-serif text-3xl font-light text-offwhite md:text-5xl">{title}</h2>
-        <div className="mx-auto my-8 h-px w-12 bg-gold/60" />
+        <h2 className="mt-3 font-serif text-2xl font-light text-offwhite md:text-5xl">{title}</h2>
+        <div className="mx-auto my-6 h-px w-10 bg-gold/60 md:my-8 md:w-12" />
         <div className="relative aspect-video w-full overflow-hidden rounded-sm border border-border bg-card">
           {url ? (
             <SmartVideo
@@ -153,12 +153,12 @@ function ConceitoSection() {
   const text = useText("phase2.home.conceito.text", "");
 
   return (
-    <section className="bg-card/40 py-20 md:py-32">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 md:grid-cols-2">
+    <section className="bg-card/40 py-14 md:py-28">
+      <div className="mx-auto grid max-w-6xl items-center gap-8 px-5 md:grid-cols-2 md:gap-12 md:px-6">
         <div>
           <div className="text-[10px] tracking-luxe text-gold">{eyebrow}</div>
-          <h2 className="mt-4 font-serif text-3xl font-light text-offwhite md:text-5xl">{title}</h2>
-          <div className="my-6 h-px w-12 bg-gold/60" />
+          <h2 className="mt-3 font-serif text-2xl font-light text-offwhite md:text-5xl">{title}</h2>
+          <div className="my-4 h-px w-10 bg-gold/60 md:my-6 md:w-12" />
           <p className="text-base leading-relaxed text-offwhite/80">{text}</p>
         </div>
         <div className="relative aspect-[4/5] overflow-hidden rounded-sm">
@@ -189,12 +189,12 @@ function DiferenciaisSection() {
   ];
 
   return (
-    <section className="bg-background py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-6 text-center">
+    <section className="bg-background py-12 md:py-24">
+      <div className="mx-auto max-w-6xl px-5 text-center md:px-6">
         <div className="text-[10px] tracking-luxe text-gold">{eyebrow}</div>
-        <h2 className="mt-4 font-serif text-3xl font-light text-offwhite md:text-5xl">{title}</h2>
-        <div className="mx-auto my-8 h-px w-12 bg-gold/60" />
-        <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <h2 className="mt-3 font-serif text-2xl font-light text-offwhite md:text-5xl">{title}</h2>
+        <div className="mx-auto my-6 h-px w-10 bg-gold/60 md:my-8 md:w-12" />
+        <div className="mt-8 grid gap-6 md:mt-12 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
           {items.map((it, i) => (
             <div key={i} className="border-t border-gold/20 pt-6 text-left">
               <div className="text-[10px] tracking-luxe text-gold">0{i + 1}</div>
@@ -213,12 +213,12 @@ function RendersSection() {
   const eyebrow = useText("phase2.home.renders.eyebrow", "RENDERS 3D");
   const title = useText("phase2.home.renders.title", "");
   return (
-    <section className="bg-card/40 py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-6">
+    <section className="bg-card/40 py-12 md:py-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-6">
         <div className="text-center">
           <div className="text-[10px] tracking-luxe text-gold">{eyebrow}</div>
-          <h2 className="mt-4 font-serif text-3xl font-light text-offwhite md:text-5xl">{title}</h2>
-          <div className="mx-auto my-8 h-px w-12 bg-gold/60" />
+          <h2 className="mt-3 font-serif text-2xl font-light text-offwhite md:text-5xl">{title}</h2>
+          <div className="mx-auto my-6 h-px w-10 bg-gold/60 md:my-8 md:w-12" />
         </div>
         <GalleryGrid tag="renders" />
       </div>
@@ -241,12 +241,12 @@ function MediaTextSection({
   const text = useText(`${baseKey}.text`, "");
 
   return (
-    <section className={`${bgClass} py-20 md:py-28`}>
+    <section className={`${bgClass} py-12 md:py-24`}>
       <div className={`mx-auto grid max-w-6xl items-center gap-12 px-6 md:grid-cols-2 ${reverse ? "md:[direction:rtl]" : ""}`}>
         <div className="md:[direction:ltr]">
           <div className="text-[10px] tracking-luxe text-gold">{eyebrow}</div>
-          <h2 className="mt-4 font-serif text-3xl font-light text-offwhite md:text-5xl">{title}</h2>
-          <div className="my-6 h-px w-12 bg-gold/60" />
+          <h2 className="mt-3 font-serif text-2xl font-light text-offwhite md:text-5xl">{title}</h2>
+          <div className="my-4 h-px w-10 bg-gold/60 md:my-6 md:w-12" />
           <p className="text-base leading-relaxed text-offwhite/80">{text}</p>
         </div>
         <div className="relative aspect-[4/3] overflow-hidden rounded-sm md:[direction:ltr]">
@@ -267,11 +267,11 @@ function MasterplanSection() {
   const img = useText("phase2.home.masterplan.image_url", "");
 
   return (
-    <section className="bg-background py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-6 text-center">
+    <section className="bg-background py-12 md:py-24">
+      <div className="mx-auto max-w-6xl px-5 text-center md:px-6">
         <div className="text-[10px] tracking-luxe text-gold">{eyebrow}</div>
-        <h2 className="mt-4 font-serif text-3xl font-light text-offwhite md:text-5xl">{title}</h2>
-        <div className="mx-auto my-8 h-px w-12 bg-gold/60" />
+        <h2 className="mt-3 font-serif text-2xl font-light text-offwhite md:text-5xl">{title}</h2>
+        <div className="mx-auto my-6 h-px w-10 bg-gold/60 md:my-8 md:w-12" />
         <p className="mx-auto max-w-2xl text-base leading-relaxed text-offwhite/80">{text}</p>
         {img && (
           <div className="mt-12 overflow-hidden rounded-sm border border-border">
@@ -298,11 +298,11 @@ function LocalizacaoSection() {
   const text = useText("phase2.home.localizacao.text", "");
   const address = useText("phase2.home.localizacao.address", "");
   return (
-    <section className="bg-card/40 py-20 md:py-28">
-      <div className="mx-auto max-w-3xl px-6 text-center">
+    <section className="bg-card/40 py-12 md:py-24">
+      <div className="mx-auto max-w-3xl px-5 text-center md:px-6">
         <div className="text-[10px] tracking-luxe text-gold">{eyebrow}</div>
-        <h2 className="mt-4 font-serif text-3xl font-light text-offwhite md:text-5xl">{title}</h2>
-        <div className="mx-auto my-8 h-px w-12 bg-gold/60" />
+        <h2 className="mt-3 font-serif text-2xl font-light text-offwhite md:text-5xl">{title}</h2>
+        <div className="mx-auto my-6 h-px w-10 bg-gold/60 md:my-8 md:w-12" />
         <p className="text-base leading-relaxed text-offwhite/80">{text}</p>
         {address && <p className="mt-6 text-[11px] tracking-luxe text-gold">{address.toUpperCase()}</p>}
       </div>
@@ -312,14 +312,14 @@ function LocalizacaoSection() {
 
 function GaleriaPreviewSection() {
   return (
-    <section className="bg-background py-20 md:py-28">
-      <div className="mx-auto max-w-6xl px-6">
+    <section className="bg-background py-12 md:py-24">
+      <div className="mx-auto max-w-6xl px-5 md:px-6">
         <div className="text-center">
           <div className="text-[10px] tracking-luxe text-gold">GALERIA</div>
-          <h2 className="mt-4 font-serif text-3xl font-light text-offwhite md:text-5xl">
+          <h2 className="mt-3 font-serif text-2xl font-light text-offwhite md:text-5xl">
             Imagens do empreendimento
           </h2>
-          <div className="mx-auto my-8 h-px w-12 bg-gold/60" />
+          <div className="mx-auto my-6 h-px w-10 bg-gold/60 md:my-8 md:w-12" />
         </div>
         <GalleryGrid tag="galeria" />
         <div className="mt-10 text-center">
@@ -337,17 +337,17 @@ function CTAVisitaSection() {
   const button = useText("phase2.home.cta.button", "Agendar Visita");
 
   return (
-    <section className="relative isolate overflow-hidden py-28 md:py-36">
+    <section className="relative isolate overflow-hidden py-16 md:py-28">
       <div className="absolute inset-0 -z-10">
         <FlexibleMedia baseKey="phase2.home.cta" alt={title} />
         <div className="absolute inset-0 bg-background/80" />
       </div>
-      <div className="mx-auto max-w-3xl px-6 text-center">
+      <div className="mx-auto max-w-3xl px-5 text-center md:px-6">
         <div className="text-[10px] tracking-luxe text-gold">{eyebrow}</div>
-        <h2 className="mt-4 font-serif text-4xl font-light text-offwhite md:text-6xl">{title}</h2>
-        <div className="mx-auto my-8 h-px w-12 bg-gold/60" />
+        <h2 className="mt-3 font-serif text-3xl font-light text-offwhite md:text-6xl">{title}</h2>
+        <div className="mx-auto my-6 h-px w-10 bg-gold/60 md:my-8 md:w-12" />
         <p className="mx-auto max-w-xl text-base leading-relaxed text-offwhite/80">{text}</p>
-        <Link to="/contato" className="btn-luxe mt-10 inline-block">
+        <Link to="/contato" className="btn-luxe mt-8 inline-block md:mt-10">
           {button}
         </Link>
       </div>
