@@ -68,17 +68,23 @@ function Phase2Content({ pageKey, variant }: { pageKey: string; variant: Props["
   );
 }
 
+const SITE_URL = "https://viverwolfegarten.com.br";
+
 export function phase2Head(pageKey: string, defaults: { title: string; description: string }) {
+  const url = `${SITE_URL}/${pageKey}`;
+  const fullTitle = `${defaults.title} — Wölfegarten`;
   return () => ({
     meta: [
-      { title: `${defaults.title} — WÖLFEGARTEN` },
+      { title: fullTitle },
       { name: "description", content: defaults.description },
-      { property: "og:title", content: `${defaults.title} — WÖLFEGARTEN` },
+      { property: "og:title", content: fullTitle },
       { property: "og:description", content: defaults.description },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: url },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: `${defaults.title} — WÖLFEGARTEN` },
+      { name: "twitter:title", content: fullTitle },
       { name: "twitter:description", content: defaults.description },
     ],
+    links: [{ rel: "canonical", href: url }],
   });
 }
