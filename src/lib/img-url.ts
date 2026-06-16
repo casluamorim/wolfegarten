@@ -35,10 +35,10 @@ export function srcSet(url: string | undefined | null, widths: number[], quality
 }
 
 /** onError handler que volta para a URL original (caso transform falhe). */
-export function fallbackToOriginal(original: string) {
+export function fallbackToOriginal(original: string | undefined | null) {
   return (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.currentTarget;
-    if (img.dataset.fallback === "1") return;
+    if (!original || img.dataset.fallback === "1") return;
     img.dataset.fallback = "1";
     img.srcset = "";
     img.src = original;
