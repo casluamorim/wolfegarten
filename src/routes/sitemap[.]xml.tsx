@@ -14,20 +14,22 @@ const PAGES = [
   "contato",
 ];
 
+const SITE_URL = "https://viverwolfegarten.com.br";
+
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
-      GET: async ({ request }) => {
-        const origin = new URL(request.url).origin;
+      GET: async () => {
         const today = new Date().toISOString().slice(0, 10);
 
         const xml =
           `<?xml version="1.0" encoding="UTF-8"?>\n` +
           `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-          PAGES.map(
-            (p) =>
-              `  <url><loc>${origin}/${p}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq></url>`,
-          ).join("\n") +
+          PAGES.map((p) => {
+            const loc = p ? `${SITE_URL}/${p}` : `${SITE_URL}/`;
+            const priority = p === "" ? "1.0" : "0.8";
+            return `  <url><loc>${loc}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>${priority}</priority></url>`;
+          }).join("\n") +
           `\n</urlset>\n`;
 
         return new Response(xml, {

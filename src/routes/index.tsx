@@ -20,9 +20,11 @@ export const Route = createFileRoute("/")({
           "Loteamento fechado de altíssimo padrão. Exclusividade, sofisticação e natureza em Indaial/SC.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://wolfegarten.lovable.app/" },
+      { property: "og:url", content: "https://viverwolfegarten.com.br/" },
+      { name: "twitter:title", content: "Wölfegarten — Alto padrão em Indaial/SC" },
+      { name: "twitter:description", content: "Loteamento fechado de altíssimo padrão em Indaial/SC." },
     ],
-    links: [{ rel: "canonical", href: "https://wolfegarten.lovable.app/" }],
+    links: [{ rel: "canonical", href: "https://viverwolfegarten.com.br/" }],
   }),
   component: Index,
 });
